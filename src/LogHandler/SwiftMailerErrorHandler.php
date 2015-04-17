@@ -3,8 +3,8 @@
 namespace eLama\ErrorHandler\LogHandler;
 
 use eLama\ErrorHandler\ContextConverter;
-use \Monolog\Handler\SwiftMailerHandler;
-use Monolog\Logger;
+use Monolog\Handler\SwiftMailerHandler;
+use Swift_Message;
 
 class SwiftMailerErrorHandler extends SwiftMailerHandler
 {
@@ -40,14 +40,19 @@ class SwiftMailerErrorHandler extends SwiftMailerHandler
     }
 
     /**
-     * @return \Swift_Message
+     * @return Swift_Message
      */
     protected function createMessageFromTemplate()
     {
         return unserialize(serialize($this->message));
     }
 
-    private function attachJson(\Swift_Message $message, $name, $jsonEncodableData)
+    /**
+     * @param Swift_Message $message
+     * @param string $name
+     * @param $jsonEncodableData
+     */
+    private function attachJson(Swift_Message $message, $name, $jsonEncodableData)
     {
         $fileName = $name . '.json';
         $attachment = \Swift_Attachment::newInstance();
@@ -84,7 +89,9 @@ class SwiftMailerErrorHandler extends SwiftMailerHandler
         if (!$line) {
             return '`somewhere...`';
         }
+
         $quotedDirSeparator = preg_quote(DIRECTORY_SEPARATOR, '#');
+
         return preg_replace('#.*((' . $quotedDirSeparator .'.*){3})$#', '...$1', $file) . ':' . $line;
     }
 
