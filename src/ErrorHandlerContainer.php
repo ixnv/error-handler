@@ -56,6 +56,7 @@ class ErrorHandlerContainer
             $responseRenderer
         );
 
+        // TODO[a.shirikov, b6x] Вынести логику ниже в конструктор (или лучше register метод) ErrorHandler'а
         if (ob_get_level() < 1) {
             ob_start();
         }
