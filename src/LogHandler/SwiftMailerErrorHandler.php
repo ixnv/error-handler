@@ -4,6 +4,7 @@ namespace eLama\ErrorHandler\LogHandler;
 
 use eLama\ErrorHandler\ContextConverter;
 use Monolog\Handler\SwiftMailerHandler;
+use Swift_Attachment;
 use Swift_Message;
 
 class SwiftMailerErrorHandler extends SwiftMailerHandler
@@ -55,7 +56,7 @@ class SwiftMailerErrorHandler extends SwiftMailerHandler
     private function attachJson(Swift_Message $message, $name, $jsonEncodableData)
     {
         $fileName = $name . '.json';
-        $attachment = \Swift_Attachment::newInstance();
+        $attachment = Swift_Attachment::newInstance();
 
         $contextConverter = new ContextConverter();
 
