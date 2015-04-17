@@ -5,7 +5,9 @@ namespace eLama\ErrorHandler;
 use eLama\ErrorHandler\Matcher\FilePathMatcher;
 use eLama\ErrorHandler\Matcher\Matcher;
 use eLama\ErrorHandler\ResponseRenderer\ResponseRenderer;
+use Exception;
 use Psr\Log\LoggerInterface;
+use ReflectionProperty;
 
 class ErrorHandler
 {
@@ -31,6 +33,7 @@ class ErrorHandler
      * @var callable
      */
     private $logLastFatalError;
+
     /**
      * @var ResponseRenderer|null
      */
@@ -87,7 +90,7 @@ class ErrorHandler
         return false;
     }
 
-    public function handleException(\Exception $exception)
+    public function handleException(Exception $exception)
     {
         $errorMessage = $this->createExceptionMessage($exception);
         $errorEvent = new ErrorEvent('Exception', $exception->getFile(), 'UNCAUGHT_EXCEPTION',
@@ -117,7 +120,7 @@ class ErrorHandler
             $this->buildContextByEvent($errorEvent)
         );
 
-        if ($this->needDisplayErrorPage($errorEvent->getCode()) && $this->responseRenderer) {
+        if ($this->needToDisplayErrorPage($errorEvent->getCode()) && $this->responseRenderer) {
             $this->responseRenderer->render();
         }
     }
@@ -215,10 +218,10 @@ class ErrorHandler
     }
 
     /**
-     * @param $errorCode
+     * @param int $errorCode
      * @return bool
      */
-    private function needDisplayErrorPage($errorCode)
+    private function needToDisplayErrorPage($errorCode)
     {
         return
             !$this->debugMode &&
@@ -231,7 +234,7 @@ class ErrorHandler
     }
 
     /**
-     * @param $errorContext
+     * @param mixed[] $errorContext
      * @return array
      */
     private function filterErrorContext($errorContext)
@@ -249,18 +252,18 @@ class ErrorHandler
     }
 
     /**
-     * @param \Exception $exception
+     * @param Exception $exception
      * @return array
      */
-    private function createExceptionContext(\Exception $exception)
+    private function createExceptionContext(Exception $exception)
     {
         $result = [];
 
         $rc = new \ReflectionClass($exception);
 
         /** @var \ReflectionProperty[] $nonEssentialProperties */
-        $nonEssentialProperties = array_filter($rc->getProperties(), function (\ReflectionProperty $p) {
-            return $p->getDeclaringClass()->getName() !== \Exception::class;
+        $nonEssentialProperties = array_filter($rc->getProperties(), function (ReflectionProperty $p) {
+            return $p->getDeclaringClass()->getName() !== Exception::class;
         });
 
         foreach ($nonEssentialProperties as $p) {

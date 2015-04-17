@@ -45,7 +45,12 @@ class ErrorCodesCatalog
         self::TYPE_EXCEPTION   => 'CRITICAL',
     ];
 
-    public function getErrorTypeToString($errorCode){
+    /**
+     * @param int $errorCode
+     * @return string
+     */
+    public function getErrorTypeToString($errorCode)
+    {
         return $this->errorTypeMap[$errorCode];
     }
 

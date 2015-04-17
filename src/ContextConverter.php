@@ -2,10 +2,6 @@
 
 namespace eLama\ErrorHandler;
 
-/**
- * Class ContextConverter
- * @package eLama
- */
 class ContextConverter
 {
     const MAX_ARRAY_ELEMENTS = 25;
@@ -89,5 +85,4 @@ class ContextConverter
             return sprintf('[array(%d)]', count($context));
         }
     }
-
 }
