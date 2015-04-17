@@ -1,0 +1,33 @@
+{
+    "name": "elama/error-handler",
+    "description": "eLama ErrorHandling library",
+    "license": "proprietary",
+    "type": "library",
+
+    "require": {
+        "php": "~5.5",
+        "swiftmailer/swiftmailer": "v5.0.1",
+        "monolog/monolog": "~1.12.0"
+    },
+
+    "require-dev": {
+        "hamcrest/hamcrest-php": "~1.2.1",
+        "phpunit/phpunit": "~4.6.4"
+    },
+
+    "autoload": {
+        "psr-4": {
+            "eLama\\ErrorHandler\\": [ "src" ]
+        }
+    },
+
+    "autoload-dev": {
+        "psr-4": {
+            "eLama\\ErrorHandler\\Test\\": [ "tests" ]
+        }
+    },
+
+    "config": {
+        "bin-dir": "bin"
+    }
+}
