@@ -56,17 +56,12 @@ class SwiftMailerErrorHandler extends SwiftMailerHandler
     {
         $fileName = $name . '.json';
         $attachment = \Swift_Attachment::newInstance();
-        $jsonData = method_exists($this->getFormatter(), 'stringify') ?
-            $this->getFormatter()->stringify($jsonEncodableData)
-            : json_encode($jsonEncodableData, JSON_PRETTY_PRINT);
 
         $contextConverter = new ContextConverter();
 
         $jsonEncodableData = $contextConverter->normalize($jsonEncodableData, 4);
 
-        $jsonData = method_exists($this->getFormatter(), 'stringify') ?
-            $this->getFormatter()->stringify($jsonEncodableData)
-            : json_encode($jsonEncodableData, JSON_PRETTY_PRINT);
+        $jsonData = $this->serializeToJson($jsonEncodableData);
         if (function_exists('bzcompress')) {
             $attachment->setContentType('application/x-bzip2');
             $attachment->setBody(bzcompress($jsonData));
@@ -117,4 +112,14 @@ class SwiftMailerErrorHandler extends SwiftMailerHandler
         return $result;
     }
 
+    /**
+     * @param mixed $jsonEncodableData
+     * @return string
+     */
+    private function serializeToJson($jsonEncodableData)
+    {
+        return method_exists($this->getFormatter(), 'stringify') ?
+            $this->getFormatter()->stringify($jsonEncodableData)
+            : json_encode($jsonEncodableData, JSON_PRETTY_PRINT);
+    }
 }
