@@ -100,13 +100,11 @@ class ErrorHandler
         $this->processError($errorEvent);
     }
 
-
     public function onShutdown()
     {
         $this->allocateMemory();
         $this->handleLastError();
     }
-
 
     public function stopRenderExceptionErrorPage()
     {
@@ -130,11 +128,13 @@ class ErrorHandler
      * @param Exception $exception
      * @return string
      */
-    private function createExceptionMessage(Exception $exception){
+    private function createExceptionMessage(Exception $exception)
+    {
         $message = [];
         $message[] = "TYPE: " . get_class($exception);
         $message[] = "CODE: {$exception->getCode()}";
         $message[] = "MESSAGE: {$exception->getMessage()}";
+
         return join('; ', $message);
     }
 
@@ -184,7 +184,6 @@ class ErrorHandler
         return array_slice($trace, 2);
     }
 
-
     private function allocateMemory()
     {
         $this->extraMemory = '';
@@ -199,7 +198,7 @@ class ErrorHandler
     private function handleLastError()
     {
         $error = error_get_last();
-        //Пишем последнюю фатальную ошибку. Может пригодиться, если ErrorHandler генерирует ошибку.
+        // Пишем последнюю фатальную ошибку. Может пригодиться, если ErrorHandler генерирует ошибку.
         $errorType = $error['type'];
         if ($this->errorCodesCatalog->isFatalError($errorType)) {
             call_user_func($this->logLastFatalError, $error);
