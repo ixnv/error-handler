@@ -7,6 +7,7 @@ use eLama\ErrorHandler\Matcher\Matcher;
 use eLama\ErrorHandler\ResponseRenderer\ResponseRenderer;
 use Exception;
 use Psr\Log\LoggerInterface;
+use ReflectionClass;
 use ReflectionProperty;
 
 class ErrorHandler
@@ -126,10 +127,10 @@ class ErrorHandler
     }
 
     /**
-     * @param \Exception $exception
+     * @param Exception $exception
      * @return string
      */
-    private function createExceptionMessage(\Exception $exception){
+    private function createExceptionMessage(Exception $exception){
         $message = [];
         $message[] = "TYPE: " . get_class($exception);
         $message[] = "CODE: {$exception->getCode()}";
@@ -259,9 +260,9 @@ class ErrorHandler
     {
         $result = [];
 
-        $rc = new \ReflectionClass($exception);
+        $rc = new ReflectionClass($exception);
 
-        /** @var \ReflectionProperty[] $nonEssentialProperties */
+        /** @var ReflectionProperty[] $nonEssentialProperties */
         $nonEssentialProperties = array_filter($rc->getProperties(), function (ReflectionProperty $p) {
             return $p->getDeclaringClass()->getName() !== Exception::class;
         });
