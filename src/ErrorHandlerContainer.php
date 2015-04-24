@@ -5,6 +5,7 @@ namespace eLama\ErrorHandler;
 use eLama\ErrorHandler\Matcher\Matcher;
 use eLama\ErrorHandler\ResponseRenderer\ResponseRenderer;
 use eLama\ErrorHandler\ResponseRenderer\WebResponseRendererFactory;
+use Psr\Log\LoggerInterface;
 
 class ErrorHandlerContainer
 {
@@ -32,18 +33,23 @@ class ErrorHandlerContainer
      * @param string $errorHandlerLogPath
      * @param Matcher[] $matchers
      * @param bool $debugMode
+     * @param LoggerInterface $logger
      */
     public static function init(
         $errorHandlerLogPath,
         array $matchers,
-        $debugMode = false
+        $debugMode = false,
+        LoggerInterface $logger = null
     ) {
         if (static::$errorHandler) {
             throw new \LogicException('ErrorHandler is already initialized');
         }
 
         $environment = self::isConsole() ? LoggerFactory::ENV_CLI : LoggerFactory::ENV_WEB;
-        $logger = (new LoggerFactory())->createLogger($errorHandlerLogPath, $environment, $debugMode);
+
+        if (!$logger) {
+            $logger = (new LoggerFactory())->createLogger($errorHandlerLogPath, $environment, $debugMode);
+        }
 
         $responseRenderer = self::createResponseRenderer();
 
