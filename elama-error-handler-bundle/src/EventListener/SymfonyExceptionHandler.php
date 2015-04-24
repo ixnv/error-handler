@@ -1,6 +1,6 @@
 <?php
 
-namespace eLama\ErrorHandler\Adapter;
+namespace eLama\ErrorHandler\Bundle\EventListener;
 
 use eLama\ErrorHandler\ErrorHandler;
 use Symfony\Component\Console\Event\ConsoleExceptionEvent;

@@ -14,7 +14,7 @@ use eLama\ErrorHandler\Matcher\UserErrorMatcher;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
-class ErrorHandlerInitializerListener
+class ErrorHandlerInitializer
 {
     /**
      * @var ContainerInterface

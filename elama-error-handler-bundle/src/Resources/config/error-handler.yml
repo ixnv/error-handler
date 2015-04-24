@@ -6,10 +6,25 @@ error_handler:
         unknown_file: ~
 
 services:
-    error_handler.request_listener:
-        class: eLama\ErrorHandler\Bundle\EventListener\ErrorHandlerInitializerListener
+    elama.error_handler:
+        class: eLama\ErrorHandler\ErrorHandler
+        factory_class: eLama\ErrorHandler\ErrorHandlerContainer
+        factory_method: getErrorHandler
+
+    elama.error_handler.request_listener:
+        class: eLama\ErrorHandler\Bundle\EventListener\ErrorHandlerInitializer
         arguments:
             - @service_container
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 255 }
 #            - { name: kernel.event_listener, event: console.command, method: onCommand, priority: 255 }
+
+    core.exceptlistener:
+        class: eLama\ErrorHandler\Bundle\EventListener\SymfonyExceptionHandler
+        arguments:
+            - @elama.error_handler
+        calls:
+            - ["stopRenderExceptionErrorPage"]
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onException, priority: 0 }
+            - { name: kernel.event_listener, event: console.exception, method: onException, priority: 255 }
