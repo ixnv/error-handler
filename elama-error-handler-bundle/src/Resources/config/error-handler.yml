@@ -7,7 +7,7 @@ error_handler:
 
 services:
     error_handler.request_listener:
-        class: eLama\ErrorHandler\Bundle\EventListener\RequestListener
+        class: eLama\ErrorHandler\Bundle\EventListener\ErrorHandlerInitializerListener
         arguments:
             - @service_container
         tags:
