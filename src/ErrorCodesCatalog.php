@@ -55,6 +55,15 @@ class ErrorCodesCatalog
     }
 
     /**
+     * @param string $errorCode
+     * @return int
+     */
+    public function getErrorCodeFromString($errorCode)
+    {
+        return array_search($errorCode, $this->errorTypeMap);
+    }
+
+    /**
      * @param int|string $errorCode
      * @return bool
      */
