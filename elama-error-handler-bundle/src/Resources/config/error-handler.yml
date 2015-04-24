@@ -1,0 +1,15 @@
+error_handler:
+    matchers:
+        fatal: ~
+        exception: ~
+        user_error: ~
+        unknown_file: ~
+
+services:
+    error_handler.request_listener:
+        class: eLama\ErrorHandler\Bundle\EventListener\RequestListener
+        arguments:
+            - @service_container
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 255 }
+#            - { name: kernel.event_listener, event: console.command, method: onCommand, priority: 255 }

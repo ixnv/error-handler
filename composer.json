@@ -11,13 +11,15 @@
     },
 
     "require-dev": {
+        "symfony/symfony": "~2.6",
         "hamcrest/hamcrest-php": "~1.2.1",
         "phpunit/phpunit": "~4.6.4"
     },
 
     "autoload": {
         "psr-4": {
-            "eLama\\ErrorHandler\\": [ "src" ]
+            "eLama\\ErrorHandler\\": [ "src" ],
+            "eLama\\ErrorHandler\\Bundle\\": ["elama-error-handler-bundle/src"]
         }
     },
 
