@@ -40,8 +40,12 @@ class ErrorHandlerInitializer
 
         $matchers = $this->createMatchers($this->container->getParameter('error_handler.matchers'));
 
-        // debugMode = true для cli
-        ErrorHandlerContainer::init($this->container->getParameter('kernel.root_dir') . '/logs/elama_logs/ErrorHandler', $matchers, false);
+        // onCommand, debug == true
+        ErrorHandlerContainer::init(
+            $this->container->getParameter('kernel.root_dir') . '/logs/elama_logs/ErrorHandler',
+            $matchers,
+            false
+        );
     }
 
     /**
