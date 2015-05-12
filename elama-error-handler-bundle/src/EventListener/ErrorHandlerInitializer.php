@@ -78,16 +78,16 @@ class ErrorHandlerInitializer
             new UnknownFileMatcher($this->createMatcher($matchesConfig['unknown_file']['handle']))
         ];
 
-        foreach ($matchesConfig['file_paths'] as $filePathMatcher) {
-            $matchers[] = new FilePathMatcher($filePathMatcher['path'], $this->createMatcher($filePathMatcher['handle']));
-        }
-
         foreach ($matchesConfig['code_messages'] as $codeMessageMatcher) {
             $matchers[] = new CodeMessageMatcher(
                 $errorCodesCatalog->getErrorCodeFromString($codeMessageMatcher['error_code']),
                 $codeMessageMatcher['message'],
                 $this->createMatcher($codeMessageMatcher['handle'])
             );
+        }
+
+        foreach ($matchesConfig['file_paths'] as $filePathMatcher) {
+            $matchers[] = new FilePathMatcher($filePathMatcher['path'], $this->createMatcher($filePathMatcher['handle']));
         }
 
         return $matchers;
