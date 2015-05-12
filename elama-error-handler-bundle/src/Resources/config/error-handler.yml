@@ -17,7 +17,7 @@ services:
             - @service_container
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 255 }
-#            - { name: kernel.event_listener, event: console.command, method: onCommand, priority: 255 }
+            - { name: kernel.event_listener, event: console.command, method: onCommand, priority: 255 }
 
     core.exceptlistener:
         class: eLama\ErrorHandler\Bundle\EventListener\SymfonyExceptionHandler

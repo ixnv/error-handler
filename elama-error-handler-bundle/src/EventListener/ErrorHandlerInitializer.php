@@ -11,6 +11,7 @@ use eLama\ErrorHandler\Matcher\FilePathMatcher;
 use eLama\ErrorHandler\Matcher\Matcher;
 use eLama\ErrorHandler\Matcher\UnknownFileMatcher;
 use eLama\ErrorHandler\Matcher\UserErrorMatcher;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
@@ -38,13 +39,26 @@ class ErrorHandlerInitializer
             return;
         }
 
-        $matchers = $this->createMatchers($this->container->getParameter('error_handler.matchers'));
+        $this->initializeErrorHandler(false);
+    }
 
-        // onCommand, debug == true
+    /**
+     * @param ConsoleCommandEvent $event
+     */
+    public function onCommand(ConsoleCommandEvent $event)
+    {
+        $this->initializeErrorHandler(true);
+    }
+
+    /**
+     * @param $debugMode
+     */
+    private function initializeErrorHandler($debugMode)
+    {
         ErrorHandlerContainer::init(
             $this->container->getParameter('kernel.root_dir') . '/logs/elama_logs/ErrorHandler',
-            $matchers,
-            false
+            $this->createMatchers($this->container->getParameter('error_handler.matchers')),
+            $debugMode
         );
     }
 
