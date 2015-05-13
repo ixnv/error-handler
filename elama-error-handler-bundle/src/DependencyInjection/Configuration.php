@@ -30,9 +30,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode("log_path")
-                    ->defaultValue(sprintf('%s/ErrorHandler', $this->logDir))
-                ->end()
+                ->scalarNode("log_path")->end()
                 ->scalarNode("logger")->end()
                 ->arrayNode('matchers')
                     ->children()

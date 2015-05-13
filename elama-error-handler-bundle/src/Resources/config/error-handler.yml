@@ -4,8 +4,8 @@ error_handler:
         exception: ~
         user_error: ~
         unknown_file: ~
-    log_path: ~
-    logger: ~
+    log_path: %kernel.logs_dir%/ErrorHandler
+    logger: null
 
 services:
     elama.error_handler:
