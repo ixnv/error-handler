@@ -14,9 +14,14 @@ class ErrorHandlerExtension extends Extension
     public function load(array $configs, ContainerBuilder $container)
     {
         $processor = new Processor();
-        $configuration = new Configuration;
+        $configuration = new Configuration($container->getParameter('kernel.logs_dir'));
         $config = $processor->processConfiguration($configuration, $configs);
 
         $container->setParameter('error_handler.matchers', $config['matchers']);
+        $container->setParameter('error_handler.log_path', $config['log_path']);
+
+        if ($config['logger'] !== 'default') {
+            $container->setParameter('error_handler.logger', $config['logger']);
+        }
     }
 }
