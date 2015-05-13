@@ -67,6 +67,10 @@ class ErrorHandlerContainer
             ob_start();
         }
 
+        while (self::getCurrentErrorHandler() !== null) {
+            restore_error_handler();
+        }
+
         set_error_handler([static::$errorHandler, 'handleError'], E_ALL & (~E_NOTICE) | E_STRICT | E_DEPRECATED | E_USER_DEPRECATED);
         set_exception_handler([static::$errorHandler, 'handleException']);
 
@@ -118,5 +122,13 @@ class ErrorHandlerContainer
     private static function isConsole()
     {
         return php_sapi_name() == 'cli';
+    }
+
+    private static function getCurrentErrorHandler()
+    {
+        $current = set_error_handler('var_dump');
+        restore_error_handler();
+
+        return $current;
     }
 }
