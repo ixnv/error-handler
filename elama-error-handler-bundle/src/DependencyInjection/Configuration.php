@@ -8,6 +8,19 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 class Configuration implements ConfigurationInterface
 {
     /**
+     * @var string
+     */
+    private $logDir;
+
+    /**
+     * @param string $logDir
+     */
+    public function __constructor($logDir)
+    {
+        $this->logDir = $logDir;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getConfigTreeBuilder()
@@ -17,6 +30,10 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->scalarNode("log_path")
+                    ->defaultValue(sprintf('%s/ErrorHandler', $this->logDir))
+                ->end()
+                ->scalarNode("logger")->end()
                 ->arrayNode('matchers')
                     ->children()
                         ->arrayNode('fatal')
