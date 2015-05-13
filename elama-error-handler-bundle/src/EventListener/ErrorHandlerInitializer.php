@@ -62,7 +62,7 @@ class ErrorHandlerInitializer
         $logger = null;
 
         if ($this->container->hasParameter('error_handler.logger')) {
-            $logger = $this->container->get($this->container->getParameter('error_Handler.logger'));
+            $logger = $this->container->get($this->container->getParameter('error_handler.logger'));
         }
 
         ErrorHandlerContainer::init(
