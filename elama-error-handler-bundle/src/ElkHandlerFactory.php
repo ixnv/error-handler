@@ -4,9 +4,9 @@ namespace eLama\ErrorHandler\Bundle;
 
 use eLama\ErrorHandler\ContextConverter;
 use eLama\ErrorHandler\LogHandler\ElasticSearchFormatter;
+use eLama\ErrorHandler\LogHandler\NullHandler;
 use Monolog\Handler\AmqpHandler;
 use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\NullHandler;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ElkHandlerFactory
@@ -41,12 +41,9 @@ class ElkHandlerFactory
     {
         $enabled = false;
 
-        if (!$container->hasParameter('elk_logging')) {
+        if ($container->hasParameter('elk_logging')) {
             $options = $container->getParameter('elk_logging');
-
-            if ($options['enabled'] === true) {
-                $enabled = true;
-            }
+            $enabled = $options['enabled'];
         }
 
         return $enabled;

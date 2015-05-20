@@ -5,7 +5,7 @@ error_handler:
         user_error: ~
         unknown_file: ~
     log_path: %kernel.logs_dir%/ErrorHandler
-    logger: null
+    logger: elama.error_handler_logger
 
 services:
     elama.error_handler:
@@ -30,3 +30,22 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: onException, priority: 0 }
             - { name: kernel.event_listener, event: console.exception, method: onException, priority: 255 }
+
+
+    elama.error_handler_logger:
+        class: Monolog\Logger
+        factory_class: eLama\ErrorHandler\LoggerFactory
+        factory_method: createLogger
+        arguments:
+            - %error_handler.log_path%
+            - "web"
+            - false
+        calls:
+            - [pushHandler, [@elk_log_handler]]
+
+    elk_log_handler:
+        class: Monolog\Handler\AmqpHandler
+        factory_class: eLama\ErrorHandler\Bundle\ElkHandlerFactory
+        factory_method: create
+        arguments:
+            - @service_container
