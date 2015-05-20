@@ -20,20 +20,20 @@ class LoggerFactory
 
     /**
      * @param string $logDirectory
-     * @param string $environment `web` or `cli`
-     * @param bool $debug
      * @return Logger
      */
-    public function createLogger($logDirectory, $environment, $debug)
+    public static function createLogger($logDirectory)
     {
-        $this->prepareLogDir($logDirectory);
+        $environment = self::isConsole() ? self::ENV_CLI : self::ENV_WEB;
+
+        self::prepareLogDir($logDirectory);
         $logDirectory = realpath($logDirectory);
-        $this->preloadClasses();
+        self::preloadClasses();
 
         $logger = new Logger('ErrorHandler');
-        $this->setBasicHandlers($logger, $logDirectory);
-        $this->setOutputHandlers($logger, $environment, $debug);
-        $this->setLogProcessors($logger);
+        self::setBasicHandlers($logger, $logDirectory);
+        self::setOutputHandlers($logger, $environment, self::isConsole());
+        self::setLogProcessors($logger);
 
         return $logger;
     }
@@ -42,7 +42,7 @@ class LoggerFactory
      * @param Logger $logger
      * @param string $logDirectory
      */
-    private function setBasicHandlers(Logger $logger, $logDirectory)
+    private static function setBasicHandlers(Logger $logger, $logDirectory)
     {
         $fileHandler = new RotatingFileHandler($logDirectory . '/log.log');
         $logger->pushHandler($fileHandler);
@@ -52,7 +52,7 @@ class LoggerFactory
         $logger->pushHandler($mailHandler);
     }
 
-    private function prepareLogDir($logDirectory)
+    private static function prepareLogDir($logDirectory)
     {
         if (!file_exists($logDirectory)) {
             mkdir($logDirectory, 0777, true);
@@ -62,7 +62,7 @@ class LoggerFactory
         }
     }
 
-    private function preloadClasses()
+    private static function preloadClasses()
     {
         //Preloading classes in case of E_STRICT
         class_exists('Monolog\Formatter\LineFormatter');
@@ -70,7 +70,7 @@ class LoggerFactory
         class_exists('Swift_CharacterReader_Utf8Reader');
     }
 
-    private function setLogProcessors(Logger $logger)
+    private static function setLogProcessors(Logger $logger)
     {
         $logger->pushProcessor(new ContextNameProcessor());
         $logger->pushProcessor(new ConsoleProcessor);
@@ -83,7 +83,7 @@ class LoggerFactory
      * @param string $environment
      * @param bool $debug
      */
-    private function setOutputHandlers(Logger $logger, $environment, $debug)
+    private static function setOutputHandlers(Logger $logger, $environment, $debug)
     {
         if ($environment == self::ENV_CLI) {
             $streamHandler = new StreamHandler(STDERR);
@@ -93,5 +93,13 @@ class LoggerFactory
             $outputHandler->setFormatter(new MessageHtmlFormatter);
             $logger->pushHandler($outputHandler);
         }
+    }
+
+    /**
+     * @return bool
+     */
+    private static function isConsole()
+    {
+        return php_sapi_name() == 'cli';
     }
 }

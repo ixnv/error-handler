@@ -45,10 +45,8 @@ class ErrorHandlerContainer
             throw new \LogicException('ErrorHandler is already initialized');
         }
 
-        $environment = self::isConsole() ? LoggerFactory::ENV_CLI : LoggerFactory::ENV_WEB;
-
         if (!$logger) {
-            $logger = (new LoggerFactory())->createLogger($errorHandlerLogPath, $environment, $debugMode);
+            $logger = LoggerFactory::createLogger($errorHandlerLogPath);
         }
 
         $responseRenderer = self::createResponseRenderer();

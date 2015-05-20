@@ -38,8 +38,6 @@ services:
         factory_method: createLogger
         arguments:
             - %error_handler.log_path%
-            - "web"
-            - false
         calls:
             - [pushHandler, [@elk_log_handler]]
 
