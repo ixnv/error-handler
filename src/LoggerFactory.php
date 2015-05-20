@@ -4,9 +4,9 @@ namespace eLama\ErrorHandler;
 
 use eLama\ErrorHandler\LogHandler\MailerFormatter;
 use eLama\ErrorHandler\LogProcessor\ConsoleProcessor;
+use eLama\ErrorHandler\LogProcessor\ContextNameProcessor;
 use eLama\ErrorHandler\LogProcessor\SessionProcessor;
 use eLama\ErrorHandler\LogProcessor\WebRequestProcessor;
-use Monolog\Processor\WebProcessor;
 use eLama\ErrorHandler\LogHandler\MessageHtmlFormatter;
 use eLama\ErrorHandler\LogHandler\MailHandlerFactory;
 use Monolog\Handler\StreamHandler;
@@ -72,6 +72,7 @@ class LoggerFactory
 
     private function setLogProcessors(Logger $logger)
     {
+        $logger->pushProcessor(new ContextNameProcessor());
         $logger->pushProcessor(new ConsoleProcessor);
         $logger->pushProcessor(new SessionProcessor);
         $logger->pushProcessor(new WebRequestProcessor($_SERVER));
