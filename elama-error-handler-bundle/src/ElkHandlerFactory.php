@@ -3,6 +3,7 @@
 namespace eLama\ErrorHandler\Bundle;
 
 use eLama\ErrorHandler\ContextConverter;
+use eLama\ErrorHandler\LoggingContext;
 use eLama\ErrorHandler\LogHandler\ElasticSearchFormatter;
 use eLama\ErrorHandler\LogHandler\NullHandler;
 use Monolog\Handler\AmqpHandler;
@@ -33,6 +34,10 @@ class ElkHandlerFactory
 
             $handler = new AmqpHandler($exchange, self::getExchangeName($options));
             $handler->setFormatter(new ElasticSearchFormatter(new ContextConverter()));
+
+            // needed for legacy code
+            define('ELK_AMQP_LOGGING', true);
+            LoggingContext::setElkHandler($handler);
         }
 
         return $handler;
