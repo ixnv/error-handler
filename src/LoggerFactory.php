@@ -72,7 +72,6 @@ class LoggerFactory
 
     private static function setLogProcessors(Logger $logger)
     {
-        $logger->pushProcessor(new ContextNameProcessor());
         $logger->pushProcessor(new ConsoleProcessor);
         $logger->pushProcessor(new SessionProcessor);
         $logger->pushProcessor(new WebRequestProcessor($_SERVER));
