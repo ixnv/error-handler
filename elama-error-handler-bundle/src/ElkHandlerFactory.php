@@ -24,7 +24,12 @@ class ElkHandlerFactory
 
         if (self::isEnabled($container)) {
             $options = $container->getParameter('elk_logging');
-            $exchange = self::createExchangeFromOptions($options);
+
+            try {
+                $exchange = self::createExchangeFromOptions($options);
+            } catch (\AMQPConnectionException $e) {
+                return $handler;
+            }
 
             $handler = new AmqpHandler($exchange, self::getExchangeName($options));
             $handler->setFormatter(new ElasticSearchFormatter(new ContextConverter()));
