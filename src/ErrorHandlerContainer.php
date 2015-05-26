@@ -2,6 +2,7 @@
 
 namespace eLama\ErrorHandler;
 
+use eLama\ErrorHandler\Exception\ErrorHandlerIsNotInitializedException;
 use eLama\ErrorHandler\Matcher\Matcher;
 use eLama\ErrorHandler\ResponseRenderer\ResponseRenderer;
 use eLama\ErrorHandler\ResponseRenderer\WebResponseRendererFactory;
@@ -22,8 +23,7 @@ class ErrorHandlerContainer
     public static function getErrorHandler()
     {
         if (!static::$errorHandler) {
-            echo 'First you must call ErrorHandlerContainer::init';
-            die();
+            throw new ErrorHandlerIsNotInitializedException();
         }
 
         return static::$errorHandler;

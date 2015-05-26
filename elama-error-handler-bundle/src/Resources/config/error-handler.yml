@@ -23,8 +23,6 @@ services:
 
     core.exceptlistener:
         class: eLama\ErrorHandler\Bundle\EventListener\SymfonyExceptionHandler
-        arguments:
-            - @elama.error_handler
         calls:
             - ["stopRenderExceptionErrorPage"]
         tags:
