@@ -6,6 +6,7 @@ use eLama\ErrorHandler\ContextConverter;
 use eLama\ErrorHandler\LoggingContext;
 use eLama\ErrorHandler\LogHandler\ElasticSearchFormatter;
 use eLama\ErrorHandler\LogHandler\NullHandler;
+use eLama\ErrorHandler\LogNormalizer;
 use Monolog\Handler\AmqpHandler;
 use Monolog\Handler\HandlerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -33,7 +34,7 @@ class ElkHandlerFactory
             }
 
             $handler = new AmqpHandler($exchange, self::getExchangeName($options));
-            $handler->setFormatter(new ElasticSearchFormatter(new ContextConverter()));
+            $handler->setFormatter(new ElasticSearchFormatter(new LogNormalizer()));
 
             // needed for legacy code
             define('ELK_AMQP_LOGGING', true);

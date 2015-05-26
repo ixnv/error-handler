@@ -2,20 +2,20 @@
 
 namespace eLama\ErrorHandler\LogHandler;
 
-use eLama\ErrorHandler\ContextConverter;
+use eLama\ErrorHandler\LogNormalizer;
 use eLama\ErrorHandler\LogProcessor\ContextNameProcessor;
 use Monolog\Formatter\FormatterInterface;
 
 class ElasticSearchFormatter implements FormatterInterface
 {
     /**
-     * @var ContextConverter
+     * @var LogNormalizer
      */
-    private $contextConverter;
+    private $normalizer;
 
-    public function __construct(ContextConverter $contextConverter)
+    public function __construct(LogNormalizer $normalizer)
     {
-        $this->contextConverter = $contextConverter;
+        $this->normalizer = $normalizer;
     }
 
     /**
@@ -25,7 +25,10 @@ class ElasticSearchFormatter implements FormatterInterface
     {
         $record = $this->convertInconsistentFieldsToJson($record);
 
-        $record['context'] = $this->contextConverter->normalize($record['context']);
+        foreach ($record as $item) {
+            $record[$item] = $this->normalizer->normalize($item);
+        }
+
         $record = $this->renameContext($record);
 
         return json_encode($record);
