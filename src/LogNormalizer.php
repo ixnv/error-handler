@@ -5,7 +5,7 @@ namespace eLama\ErrorHandler;
 class LogNormalizer
 {
     const DEFAULT_MAX_NESTING_LEVEL = 10;
-    const MAX_ARRAY_ELEMENTS = 15;
+    const MAX_ARRAY_ELEMENTS = 25;
     const MAX_STRING_SIZE_IN_BYTES = 32776;
 
     /**
