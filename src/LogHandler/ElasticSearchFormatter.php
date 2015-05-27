@@ -25,8 +25,8 @@ class ElasticSearchFormatter implements FormatterInterface
     {
         $record = $this->convertInconsistentFieldsToJson($record);
 
-        foreach ($record as $item) {
-            $record[$item] = $this->normalizer->normalize($item);
+        foreach ($record as $index => $item) {
+            $record[$index] = $this->normalizer->normalize($item);
         }
 
         $record = $this->renameContext($record);
