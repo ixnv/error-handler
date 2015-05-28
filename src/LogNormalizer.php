@@ -16,9 +16,9 @@ class LogNormalizer
     public function normalize($record, $nesting = self::DEFAULT_MAX_NESTING_LEVEL)
     {
         if (is_array($record)) {
-            $record = $this->normalizeArray($record, $nesting);
+            $record = $this->normalizeArray($record, --$nesting);
         } elseif (is_object($record)) {
-            $record = $this->normalizeObject($record, $nesting);
+            $record = $this->normalizeObject($record, --$nesting);
         } elseif (is_resource($record)) {
             $record = sprintf('[%s of type `%s`]', (string)$record, get_resource_type($record));
         } elseif (is_string($record) && strlen($record) > self::MAX_STRING_SIZE_IN_BYTES) {
@@ -46,7 +46,7 @@ class LogNormalizer
             }
 
             foreach ($records as $key => $record) {
-                $result[$key] = $this->normalize($record, --$nesting);
+                $result[$key] = $this->normalize($record, $nesting);
             }
         } else {
             $result = sprintf('array(%d)', count($records));

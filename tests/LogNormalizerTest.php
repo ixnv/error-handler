@@ -70,10 +70,7 @@ class LogNormalizerTest extends \PHPUnit_Framework_TestCase
 
         $result = $this->normalizer->normalize($input, $maxNesting);
 
-        assertThat($result, is(equalTo([
-            ['array(2)', 'element'],
-            'element'
-        ])));
+        assertThat($result, is(equalTo(['array(2)', 'element'])));
     }
 
     /**
