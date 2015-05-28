@@ -49,7 +49,11 @@ class ElasticSearchFormatter implements FormatterInterface
     private function convertInconsistentFieldsToJson(array $record)
     {
         if (array_key_exists('trace', $record['context'])) {
-            $record['context']['trace'] = json_encode($record['context']['trace']);
+            foreach ($record['context']['trace'] as $index => $item) {
+                if (array_key_exists('args', $item)) {
+                    $record['context']['trace'][$index]['args'] = json_encode($item['args']);
+                }
+            }
         }
 
         return $record;
