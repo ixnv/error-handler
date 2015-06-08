@@ -45,3 +45,10 @@ services:
         factory_method: create
         arguments:
             - @service_container
+
+    graylog_handler:
+        class: Monolog\Handler\GelfHandler
+        factory_class: eLama\ErrorHandler\Bundle\GraylogHandlerFactory
+        factory_method: create
+        arguments:
+            - @service_container
