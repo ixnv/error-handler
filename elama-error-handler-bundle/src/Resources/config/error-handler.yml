@@ -37,7 +37,7 @@ services:
         arguments:
             - %error_handler.log_path%
         calls:
-            - [pushHandler, [@elk_log_handler]]
+            - [pushHandler, [@graylog_handler]]
 
     elk_log_handler:
         class: Monolog\Handler\AmqpHandler
