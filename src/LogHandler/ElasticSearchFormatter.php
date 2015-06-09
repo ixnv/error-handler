@@ -51,7 +51,7 @@ class ElasticSearchFormatter implements FormatterInterface
         if (array_key_exists('trace', $record['context'])) {
             foreach ($record['context']['trace'] as $index => $item) {
                 if (array_key_exists('args', $item)) {
-                    $record['context']['trace'][$index]['args'] = json_encode($item['args']);
+                    $record['context']['trace'][$index]['args'] = json_encode($item['args'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
                 }
             }
         }

@@ -9,6 +9,6 @@ class JsonResponseRenderer extends WebResponseRenderer
      */
     protected function getResponseBody()
     {
-        return json_encode(['error' => 'Неизвестная ошибка']);
+        return json_encode(['error' => 'Неизвестная ошибка'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 }
