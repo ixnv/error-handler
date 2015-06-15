@@ -2,6 +2,7 @@
 
 namespace eLama\ErrorHandler;
 
+use eLama\ErrorHandler\LogHandler\NullHandler;
 use Monolog\Handler\HandlerInterface;
 
 /**
@@ -18,6 +19,10 @@ class LoggingContext
 
     public static function getElkHandler()
     {
+        if (!self::$elkHandler) {
+            self::$elkHandler = new NullHandler();
+        }
+
         return self::$elkHandler;
     }
 }
