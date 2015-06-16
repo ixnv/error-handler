@@ -2,10 +2,10 @@
 
 namespace eLama\ErrorHandler\Bundle;
 
-use eLama\ErrorHandler\AmqpTransport;
 use eLama\ErrorHandler\LoggingContext;
 use eLama\ErrorHandler\LogHandler\NullHandler;
 use Gelf\Publisher;
+use Gelf\Transport\AmqpTransport;
 use Monolog\Handler\GelfHandler;
 use Monolog\Handler\HandlerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -27,17 +27,35 @@ class GraylogHandlerFactory
             $options = $container->getParameter('graylog_logging');
 
             try {
-                $exchange = self::createExchangeFromOptions($options);
+                $connection = new \AMQPConnection([
+                    'host' => $options['host'],
+                    'login' => $options['login'],
+                    'password' => $options['password']
+                ]);
+
+                $connection->connect();
+
+                $channel = new \AMQPChannel($connection);
+                $exchange = new \AMQPExchange($channel);
+
+                $exchange->setName(self::getExchangeName($options));
+                $exchange->setType(AMQP_EX_TYPE_FANOUT);
+                $exchange->declareExchange();
+
+                $queue = new \AMQPQueue($channel);
+                $queue->setName(self::getQueueName($options));
+                $queue->setFlags(AMQP_DURABLE);
+                $queue->declareQueue();
+                $queue->bind($exchange->getName());
+
             } catch (\AMQPConnectionException $e) {
                 return $handler;
             }
 
             $handler = new GelfHandler(
-                new Publisher(new AmqpTransport($exchange))
+                new Publisher(new AmqpTransport($exchange, $queue))
             );
 
-            // needed for legacy code
-            define('ELK_AMQP_LOGGING', true);
             LoggingContext::setElkHandler($handler);
         }
 
@@ -58,36 +76,6 @@ class GraylogHandlerFactory
         }
 
         return $enabled;
-    }
-
-    /**
-     * @param string[] $options
-     * @return \AMQPExchange
-     */
-    private static function createExchangeFromOptions(array $options)
-    {
-        $connection = new \AMQPConnection([
-            'host' => $options['host'],
-            'login' => $options['login'],
-            'password' => $options['password']
-        ]);
-
-        $connection->connect();
-
-        $channel = new \AMQPChannel($connection);
-        $exchange = new \AMQPExchange($channel);
-
-        $exchange->setName(self::getExchangeName($options));
-        $exchange->setType(AMQP_EX_TYPE_FANOUT);
-        $exchange->declareExchange();
-
-        $queue = new \AMQPQueue($channel);
-        $queue->setName(self::getQueueName($options));
-        $queue->setFlags(AMQP_DURABLE);
-        $queue->declareQueue();
-        $queue->bind($exchange->getName());
-
-        return $exchange;
     }
 
     /**
