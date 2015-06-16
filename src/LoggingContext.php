@@ -12,17 +12,43 @@ class LoggingContext
 {
     private static $elkHandler = null;
 
-    public static function setElkHandler(HandlerInterface $handler)
+
+    /**
+     * @param HandlerInterface $handler
+     */
+    public static function setHandler(HandlerInterface $handler)
     {
         self::$elkHandler = $handler;
     }
 
-    public static function getElkHandler()
+    /**
+     * @return HandlerInterface
+     */
+    public static function getHandler()
     {
         if (!self::$elkHandler) {
             self::$elkHandler = new NullHandler();
         }
-
         return self::$elkHandler;
+    }
+
+    /**
+     * @deprecated
+     * @param HandlerInterface $handler
+     */
+    public static function setElkHandler(HandlerInterface $handler)
+    {
+        trigger_error('This method is deprecated, use setHandler', E_USER_DEPRECATED);
+        self::setHandler($handler);
+    }
+
+    /**
+     * @deprecated
+     * @return NullHandler|null
+     */
+    public static function getElkHandler()
+    {
+        trigger_error('This method is deprecated, use getHandler', E_USER_DEPRECATED);
+        return self::getHandler();
     }
 }

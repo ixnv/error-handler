@@ -56,7 +56,7 @@ class GraylogHandlerFactory
                 new Publisher(new AmqpTransport($exchange, $queue))
             );
 
-            LoggingContext::setElkHandler($handler);
+            LoggingContext::setHandler($handler);
         }
 
         return $handler;
