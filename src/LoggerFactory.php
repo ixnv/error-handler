@@ -2,15 +2,15 @@
 
 namespace eLama\ErrorHandler;
 
+use eLama\ErrorHandler\LogHandler\ElasticSearchFormatter;
 use eLama\ErrorHandler\LogHandler\MailerFormatter;
+use eLama\ErrorHandler\LogHandler\MailHandlerFactory;
+use eLama\ErrorHandler\LogHandler\MessageHtmlFormatter;
 use eLama\ErrorHandler\LogProcessor\ConsoleProcessor;
-use eLama\ErrorHandler\LogProcessor\ContextNameProcessor;
 use eLama\ErrorHandler\LogProcessor\SessionProcessor;
 use eLama\ErrorHandler\LogProcessor\WebRequestProcessor;
-use eLama\ErrorHandler\LogHandler\MessageHtmlFormatter;
-use eLama\ErrorHandler\LogHandler\MailHandlerFactory;
-use Monolog\Handler\StreamHandler;
 use Monolog\Handler\RotatingFileHandler;
+use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
 class LoggerFactory
@@ -49,6 +49,7 @@ class LoggerFactory
 
         $mailHandler = (new MailHandlerFactory)->createMailHandler();
         $mailHandler->setFormatter(new MailerFormatter());
+        $mailHandler->setFormatter(new ElasticSearchFormatter(new LogNormalizer()));
         $logger->pushHandler($mailHandler);
     }
 
