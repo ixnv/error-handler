@@ -12,9 +12,10 @@ class GraylogFormatter extends GelfMessageFormatter
      */
     private $normalizer;
 
-    public function __construct(LogNormalizer $normalizer)
+    public function __construct($systemName = null, $extraPrefix = null, $contextPrefix = 'ctxt_')
     {
-        $this->normalizer = $normalizer;
+        $this->normalizer = new LogNormalizer();
+        parent::__construct($systemName, $extraPrefix, $contextPrefix);
     }
 
     /**

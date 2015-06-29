@@ -57,7 +57,7 @@ class GraylogHandlerFactory
             $handler = new GelfHandler(
                 new Publisher(new AmqpTransport($exchange, $queue))
             );
-            $handler->setFormatter(new GraylogFormatter(new LogNormalizer()));
+            $handler->setFormatter(new GraylogFormatter());
 
             LoggingContext::setHandler($handler);
         }
