@@ -49,7 +49,6 @@ class LoggerFactory
 
         $mailHandler = (new MailHandlerFactory)->createMailHandler();
         $mailHandler->setFormatter(new MailerFormatter());
-        $mailHandler->setFormatter(new ElasticSearchFormatter(new LogNormalizer()));
         $logger->pushHandler($mailHandler);
     }
 
