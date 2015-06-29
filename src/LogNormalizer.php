@@ -5,8 +5,8 @@ namespace eLama\ErrorHandler;
 class LogNormalizer
 {
     const DEFAULT_MAX_NESTING_LEVEL = 10;
-    const MAX_ARRAY_ELEMENTS = 25;
-    const MAX_STRING_SIZE_IN_BYTES = 31776;
+    const MAX_ARRAY_ELEMENTS = 50;
+    const MAX_STRING_SIZE_IN_BYTES = 1048576; // 1 Mb
 
     /**
      * @param mixed $record

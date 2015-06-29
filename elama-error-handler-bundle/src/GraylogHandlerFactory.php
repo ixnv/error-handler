@@ -3,7 +3,9 @@
 namespace eLama\ErrorHandler\Bundle;
 
 use eLama\ErrorHandler\LoggingContext;
+use eLama\ErrorHandler\LogHandler\GraylogFormatter;
 use eLama\ErrorHandler\LogHandler\NullHandler;
+use eLama\ErrorHandler\LogNormalizer;
 use Gelf\Publisher;
 use Gelf\Transport\AmqpTransport;
 use Monolog\Handler\GelfHandler;
@@ -55,6 +57,7 @@ class GraylogHandlerFactory
             $handler = new GelfHandler(
                 new Publisher(new AmqpTransport($exchange, $queue))
             );
+            $handler->setFormatter(new GraylogFormatter(new LogNormalizer()));
 
             LoggingContext::setHandler($handler);
         }

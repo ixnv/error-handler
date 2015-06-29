@@ -46,19 +46,9 @@ services:
         arguments:
             - @service_container
 
-    elama.error_handler.log_normalizer:
-        class: eLama\ErrorHandler\LogNormalizer
-
-    elama.error_handler.elasticsearch_formatter:
-        class: eLama\ErrorHandler\LogHandler\ElasticSearchFormatter
-        arguments:
-            - @elama.error_handler.log_normalizer
-
     graylog_handler:
         class: Monolog\Handler\GelfHandler
         factory_class: eLama\ErrorHandler\Bundle\GraylogHandlerFactory
         factory_method: create
         arguments:
             - @service_container
-        calls:
-          - [setFormatter, [@elama.error_handler.elasticsearch_formatter]]
