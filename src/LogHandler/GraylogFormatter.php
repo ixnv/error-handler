@@ -26,6 +26,7 @@ class GraylogFormatter extends GelfMessageFormatter
         foreach ($record as $index => $item) {
             $record[$index] = $this->normalizer->normalize($item);
         }
+
         return parent::format($record);
     }
 

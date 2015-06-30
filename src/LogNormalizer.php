@@ -17,8 +17,6 @@ class LogNormalizer
     {
         if (is_array($record)) {
             $record = $this->normalizeArray($record, --$nesting);
-        } elseif (is_object($record)) {
-            $record = $this->normalizeObject($record, --$nesting);
         } elseif (is_resource($record)) {
             $record = sprintf('[%s of type `%s`]', (string)$record, get_resource_type($record));
         } elseif (is_string($record) && strlen($record) > self::MAX_STRING_SIZE_IN_BYTES) {
@@ -53,30 +51,5 @@ class LogNormalizer
         }
 
         return $result;
-    }
-
-    /**
-     * @param object $object
-     * @param int $nesting
-     * @return mixed
-     */
-    private function normalizeObject($object, $nesting)
-    {
-        $context = null;
-
-        if ($nesting > 0) {
-            $context = [];
-            $reflection = new \ReflectionObject($object);
-            $context['__class_name'] = $reflection->getName();
-            $properties = $reflection->getProperties();
-            foreach ($properties as $property) {
-                $property->setAccessible(true);
-                $context[$property->getName()] = $this->normalize($property->getValue($object), $nesting);
-            }
-        } else {
-            $context = sprintf('[object of class `%s`]', get_class($object));
-        }
-
-        return $context;
     }
 }
