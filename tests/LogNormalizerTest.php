@@ -74,34 +74,6 @@ class LogNormalizerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
-     */
-    public function normalize_Object_ReturnsClassAndItsFields()
-    {
-        $class = new AClass();
-
-        $result = $this->normalizer->normalize($class);
-
-        assertThat($result, is(equalTo([
-            '__class_name' => 'eLama\ErrorHandler\Test\AClass',
-            'a' => 'a',
-            'b' => ['b']
-        ])));
-    }
-
-    /**
-     * @test
-     */
-    public function normalize_ObjectAndNestingIsExceeded_ReturnsClassName()
-    {
-        $class = new AClass();
-
-        $result = $this->normalizer->normalize($class, 0);
-
-        assertThat($result, is(equalTo('[object of class `eLama\ErrorHandler\Test\AClass`]')));
-    }
-
-    /**
      * @param int $bytes
      * @return string
      */
