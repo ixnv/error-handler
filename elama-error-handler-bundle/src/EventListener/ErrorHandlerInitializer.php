@@ -65,6 +65,10 @@ class ErrorHandlerInitializer
             $logger = $this->container->get($this->container->getParameter('error_handler.logger'));
         }
 
+        if ($this->centralizedLoggingEnabled()) {
+            define('CENTRALIZED_LOGGING_ENABLED', true);
+        }
+
         ErrorHandlerContainer::init(
             $this->container->getParameter('error_handler.log_path'),
             $this->createMatchers($this->container->getParameter('error_handler.matchers')),
@@ -111,5 +115,13 @@ class ErrorHandlerInitializer
     private function createMatcher($handle)
     {
         return ($handle) ? Matcher::HANDLE : Matcher::IGNORE;
+    }
+
+    /**
+     * @return bool
+     */
+    private function centralizedLoggingEnabled()
+    {
+        return $this->container->hasParameter('graylog_logging.enabled') && $this->container->getParameter('graylog_logging.enabled');
     }
 }

@@ -47,9 +47,11 @@ class LoggerFactory
         $fileHandler = new RotatingFileHandler($logDirectory . '/log.log');
         $logger->pushHandler($fileHandler);
 
-        $mailHandler = (new MailHandlerFactory)->createMailHandler();
-        $mailHandler->setFormatter(new MailerFormatter());
-        $logger->pushHandler($mailHandler);
+        if (!defined('CENTRALIZED_LOGGING_ENABLED') || !CENTRALIZED_LOGGING_ENABLED) {
+            $mailHandler = (new MailHandlerFactory)->createMailHandler();
+            $mailHandler->setFormatter(new MailerFormatter());
+            $logger->pushHandler($mailHandler);
+        }
     }
 
     private static function prepareLogDir($logDirectory)
