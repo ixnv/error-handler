@@ -26,7 +26,7 @@ services:
         calls:
             - ["stopRenderExceptionErrorPage"]
         tags:
-            - { name: kernel.event_listener, event: kernel.exception, method: onException, priority: 0 }
+            - { name: kernel.event_listener, event: kernel.exception, method: onException, priority: 10 }
             - { name: kernel.event_listener, event: console.exception, method: onException, priority: 255 }
 
 
