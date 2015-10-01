@@ -8,6 +8,7 @@ use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\Debug\Exception\DummyException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * @deprecated
@@ -33,10 +34,12 @@ class SymfonyExceptionHandler
             return;
         }
 
-        if (!($exception instanceof DummyException)) { // warning При дебаге
-            $this->errorHandler->stopRenderExceptionErrorPage();
-            $this->errorHandler->handleException($exception);
+        if ($exception instanceof DummyException || $exception instanceof AccessDeniedException) {
+            return;
         }
+
+        $this->errorHandler->stopRenderExceptionErrorPage();
+        $this->errorHandler->handleException($exception);
     }
 
     public function stopRenderExceptionErrorPage()
