@@ -122,6 +122,14 @@ class ErrorHandlerInitializer
      */
     private function centralizedLoggingEnabled()
     {
-        return $this->container->hasParameter('graylog_logging.enabled') && $this->container->getParameter('graylog_logging.enabled');
+        $grayLogEnabled = false;
+        if ( $this->container->hasParameter('graylog_logging')) {
+            $grayLogConfig = $this->container->getParameter('graylog_logging');
+            if (isset($grayLogConfig['enabled']) && $grayLogConfig['enabled']) {
+                $grayLogEnabled = true;
+            }
+        }
+
+        return $grayLogEnabled;
     }
 }

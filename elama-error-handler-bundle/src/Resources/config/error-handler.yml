@@ -10,8 +10,7 @@ error_handler:
 services:
     elama.error_handler:
         class: eLama\ErrorHandler\ErrorHandler
-        factory_class: eLama\ErrorHandler\ErrorHandlerContainer
-        factory_method: getErrorHandler
+        factory: [eLama\ErrorHandler\ErrorHandlerContainer, getErrorHandler]
 
     elama.error_handler.request_listener:
         class: eLama\ErrorHandler\Bundle\EventListener\ErrorHandlerInitializer
@@ -32,8 +31,7 @@ services:
 
     elama.error_handler_logger:
         class: Monolog\Logger
-        factory_class: eLama\ErrorHandler\LoggerFactory
-        factory_method: createLogger
+        factory: [eLama\ErrorHandler\LoggerFactory, createLogger]
         arguments:
             - %error_handler.log_path%
         calls:
@@ -41,14 +39,12 @@ services:
 
     elk_log_handler:
         class: Monolog\Handler\AmqpHandler
-        factory_class: eLama\ErrorHandler\Bundle\ElkHandlerFactory
-        factory_method: create
+        factory: [eLama\ErrorHandler\Bundle\ElkHandlerFactory, create]
         arguments:
             - @service_container
 
     graylog_handler:
         class: Monolog\Handler\GelfHandler
-        factory_class: eLama\ErrorHandler\Bundle\GraylogHandlerFactory
-        factory_method: create
+        factory: [eLama\ErrorHandler\Bundle\GraylogHandlerFactory, create]
         arguments:
             - @service_container
