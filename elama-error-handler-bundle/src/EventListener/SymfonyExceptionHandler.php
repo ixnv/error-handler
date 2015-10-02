@@ -11,6 +11,7 @@ use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\Debug\Exception\DummyException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class SymfonyExceptionHandler
 {
@@ -30,11 +31,13 @@ class SymfonyExceptionHandler
             return;
         }
 
+        if ($exception instanceof DummyException || $exception instanceof AccessDeniedException) {
+            return;
+        }
+
         $this->safeCall(function () use ($exception) {
-            if (!($exception instanceof DummyException)) { // warning При дебаге
-                $this->getErrorHandler()->stopRenderExceptionErrorPage();
-                $this->getErrorHandler()->handleException($exception);
-            }
+            $this->getErrorHandler()->stopRenderExceptionErrorPage();
+            $this->getErrorHandler()->handleException($exception);
         });
     }
 
