@@ -12,6 +12,11 @@ class AmqpSettings
     /**
      * @var string
      */
+    private $port;
+
+    /**
+     * @var string
+     */
     private $login;
 
     /**
@@ -31,6 +36,7 @@ class AmqpSettings
 
     /**
      * @param string $host
+     * @param string $port
      * @param string $login
      * @param string $password
      * @param string $exchangeName
@@ -38,12 +44,14 @@ class AmqpSettings
      */
     public function __construct(
         $host,
+        $port,
         $login,
         $password,
         $exchangeName = 'log-messages',
         $queueName = 'log-messages'
     ) {
         $this->host = $host;
+        $this->port = $port;
         $this->login = $login;
         $this->password = $password;
         $this->exchangeName = $exchangeName;
@@ -56,6 +64,14 @@ class AmqpSettings
     public function getHost()
     {
         return $this->host;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPort()
+    {
+        return $this->port;
     }
 
     /**

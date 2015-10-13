@@ -2,15 +2,22 @@
 
 namespace eLama\ErrorHandler;
 
+use eLama\ErrorHandler\LogHandler\AmqpTransport;
 use eLama\ErrorHandler\LogHandler\NullHandler;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Logger;
 use Gelf\Publisher;
-use Gelf\Transport\AmqpTransport;
 use Monolog\Handler\GelfHandler;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Exception\AMQPRuntimeException;
 
 class CentralizedLoggerFactory
 {
+    /**
+     * @var HandlerInterface
+     */
+    private static $handler;
+
     /**
      * @param string $name
      * @param AmqpSettings $amqpSettings
@@ -19,12 +26,24 @@ class CentralizedLoggerFactory
     public static function createLogger($name, AmqpSettings $amqpSettings)
     {
         $logger = new Logger($name);
-
-        $handler = self::createGraylogHandler($amqpSettings);
-        LoggingContext::setHandler($handler);
+        $handler = self::getGraylogHandler($amqpSettings);
         $logger->pushHandler($handler);
+        LoggingContext::setHandler($handler);
 
         return $logger;
+    }
+
+    /**
+     * @param AmqpSettings $amqpSettings
+     * @return HandlerInterface
+     */
+    private static function getGraylogHandler(AmqpSettings $amqpSettings)
+    {
+        if (!self::$handler) {
+            self::$handler = self::createGraylogHandler($amqpSettings);
+        }
+
+        return self::$handler;
     }
 
     /**
@@ -34,29 +53,18 @@ class CentralizedLoggerFactory
     private static function createGraylogHandler(AmqpSettings $amqpSettings)
     {
         try {
-            $connection = new \AMQPConnection([
-                'host' => $amqpSettings->getHost(),
-                'login' => $amqpSettings->getLogin(),
-                'password' => $amqpSettings->getPassword()
-            ]);
+            $connection = new AMQPStreamConnection(
+                $amqpSettings->getHost(),
+                $amqpSettings->getPort(),
+                $amqpSettings->getLogin(),
+                $amqpSettings->getPassword()
+            );
 
-            $connection->connect();
+            $channel = $connection->channel();
+            $channel->queue_declare($amqpSettings->getQueueName(), false, true, false, false);
 
-            $channel = new \AMQPChannel($connection);
-            $exchange = new \AMQPExchange($channel);
-
-            $exchange->setName($amqpSettings->getExchangeName());
-            $exchange->setType(AMQP_EX_TYPE_FANOUT);
-            $exchange->declareExchange();
-
-            $queue = new \AMQPQueue($channel);
-            $queue->setName($amqpSettings->getQueueName());
-            $queue->setFlags(AMQP_DURABLE);
-            $queue->declareQueue();
-            $queue->bind($exchange->getName());
-
-            return new GelfHandler(new Publisher(new AmqpTransport($exchange, $queue)));
-        } catch (\AMQPConnectionException $e) {
+            return new GelfHandler(new Publisher(new AmqpTransport($channel)));
+        } catch (AMQPRuntimeException $e) {
             return new NullHandler();
         }
     }
