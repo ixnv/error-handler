@@ -27,11 +27,6 @@ class AmqpSettings
     /**
      * @var string
      */
-    private $exchangeName;
-
-    /**
-     * @var string
-     */
     private $queueName;
 
     /**
@@ -39,7 +34,6 @@ class AmqpSettings
      * @param string $port
      * @param string $login
      * @param string $password
-     * @param string $exchangeName
      * @param string $queueName
      */
     public function __construct(
@@ -47,14 +41,12 @@ class AmqpSettings
         $port,
         $login,
         $password,
-        $exchangeName = 'log-messages',
         $queueName = 'log-messages'
     ) {
         $this->host = $host;
         $this->port = $port;
         $this->login = $login;
         $this->password = $password;
-        $this->exchangeName = $exchangeName;
         $this->queueName = $queueName;
     }
 
@@ -88,14 +80,6 @@ class AmqpSettings
     public function getPassword()
     {
         return $this->password;
-    }
-
-    /**
-     * @return string
-     */
-    public function getExchangeName()
-    {
-        return $this->exchangeName;
     }
 
     /**

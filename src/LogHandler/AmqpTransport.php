@@ -11,6 +11,8 @@ use PhpAmqpLib\Message\AMQPMessage;
 
 class AmqpTransport extends AbstractTransport
 {
+    const EXCHANGE_NAME = 'log-messages';
+
     /**
      * @var AMQPChannel
      */
@@ -32,7 +34,7 @@ class AmqpTransport extends AbstractTransport
 
     /**
      * @param Message $message
-     * @return int|void
+     * @return int
      */
     public function send(Message $message)
     {
@@ -46,7 +48,7 @@ class AmqpTransport extends AbstractTransport
                     'content_type' => 'application/json'
                 ]
             ),
-            'log-messages'
+            self::EXCHANGE_NAME
         );
 
         return 1;
