@@ -3,6 +3,7 @@
 namespace eLama\ErrorHandler;
 
 use eLama\ErrorHandler\LogHandler\AmqpTransport;
+use eLama\ErrorHandler\LogHandler\GraylogFormatter;
 use eLama\ErrorHandler\LogHandler\NullHandler;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Logger;
@@ -63,7 +64,9 @@ class CentralizedLoggerFactory
             $channel = $connection->channel();
             $channel->queue_declare($amqpSettings->getQueueName(), false, true, false, false);
 
-            return new GelfHandler(new Publisher(new AmqpTransport($channel)));
+            $handler = new GelfHandler(new Publisher(new AmqpTransport($channel)));
+            $handler->setFormatter(new GraylogFormatter());
+            return $handler;
         } catch (AMQPRuntimeException $e) {
             return new NullHandler();
         }

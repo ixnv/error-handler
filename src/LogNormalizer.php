@@ -6,7 +6,7 @@ class LogNormalizer
 {
     const DEFAULT_MAX_NESTING_LEVEL = 10;
     const MAX_ARRAY_ELEMENTS = 50;
-    const MAX_STRING_SIZE_IN_BYTES = 256000; // 250 кб
+    const MAX_STRING_SIZE_IN_BYTES = 32766;
 
     /**
      * @param mixed $record
