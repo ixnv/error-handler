@@ -10,9 +10,9 @@ class AmqpSettings
     private $host;
 
     /**
-     * @var string
+     * @var int
      */
-    private $port;
+    private $port = 5672;
 
     /**
      * @var string
@@ -31,7 +31,7 @@ class AmqpSettings
 
     /**
      * @param string $host
-     * @param string $port
+     * @param int $port
      * @param string $login
      * @param string $password
      * @param string $queueName
@@ -44,10 +44,13 @@ class AmqpSettings
         $queueName = 'log-messages'
     ) {
         $this->host = $host;
-        $this->port = $port;
         $this->login = $login;
         $this->password = $password;
         $this->queueName = $queueName;
+
+        if (!empty($port)) {
+            $this->port = $port;
+        }
     }
 
     /**
@@ -59,7 +62,7 @@ class AmqpSettings
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getPort()
     {
