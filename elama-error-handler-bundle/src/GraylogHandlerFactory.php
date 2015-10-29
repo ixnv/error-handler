@@ -2,20 +2,26 @@
 
 namespace eLama\ErrorHandler\Bundle;
 
+use eLama\ErrorHandler\AmqpSettings;
 use eLama\ErrorHandler\LoggingContext;
+use eLama\ErrorHandler\LogHandler\AmqpTransport;
 use eLama\ErrorHandler\LogHandler\GraylogFormatter;
 use eLama\ErrorHandler\LogHandler\NullHandler;
-use eLama\ErrorHandler\LogNormalizer;
 use Gelf\Publisher;
-use Gelf\Transport\AmqpTransport;
 use Monolog\Handler\GelfHandler;
 use Monolog\Handler\HandlerInterface;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Exception\AMQPRuntimeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class GraylogHandlerFactory
 {
-    const DEFAULT_EXCHANGE_NAME = 'log-messages';
     const DEFAULT_QUEUE_NAME = 'log-messages';
+
+    /**
+     * @var HandlerInterface
+     */
+    private static $handler;
 
     /**
      * @param ContainerInterface $container
@@ -28,41 +34,56 @@ class GraylogHandlerFactory
         if (self::isEnabled($container)) {
             $options = $container->getParameter('graylog_logging');
 
-            try {
-                $connection = new \AMQPConnection([
-                    'host' => $options['host'],
-                    'login' => $options['login'],
-                    'password' => $options['password']
-                ]);
-
-                $connection->connect();
-
-                $channel = new \AMQPChannel($connection);
-                $exchange = new \AMQPExchange($channel);
-
-                $exchange->setName(self::getExchangeName($options));
-                $exchange->setType(AMQP_EX_TYPE_FANOUT);
-                $exchange->declareExchange();
-
-                $queue = new \AMQPQueue($channel);
-                $queue->setName(self::getQueueName($options));
-                $queue->setFlags(AMQP_DURABLE);
-                $queue->declareQueue();
-                $queue->bind($exchange->getName());
-
-            } catch (\AMQPConnectionException $e) {
-                return $handler;
-            }
-
-            $handler = new GelfHandler(
-                new Publisher(new AmqpTransport($exchange, $queue))
-            );
-            $handler->setFormatter(new GraylogFormatter());
+            $handler = self::getGraylogHandler(new AmqpSettings(
+                $options['host'],
+                $options['port'],
+                $options['login'],
+                $options['password'],
+                self::getQueueName($options)
+            ));
 
             LoggingContext::setHandler($handler);
         }
 
         return $handler;
+    }
+
+    /**
+     * @param AmqpSettings $amqpSettings
+     * @return HandlerInterface
+     */
+    private static function getGraylogHandler(AmqpSettings $amqpSettings)
+    {
+        if (!self::$handler) {
+            self::$handler = self::createGraylogHandler($amqpSettings);
+        }
+
+        return self::$handler;
+    }
+
+    /**
+     * @param AmqpSettings $amqpSettings
+     * @return HandlerInterface
+     */
+    private static function createGraylogHandler(AmqpSettings $amqpSettings)
+    {
+        try {
+            $connection = new AMQPStreamConnection(
+                $amqpSettings->getHost(),
+                $amqpSettings->getPort(),
+                $amqpSettings->getLogin(),
+                $amqpSettings->getPassword()
+            );
+
+            $channel = $connection->channel();
+            $channel->queue_declare($amqpSettings->getQueueName(), false, true, false, false);
+
+            $handler = new GelfHandler(new Publisher(new AmqpTransport($channel)));
+            $handler->setFormatter(new GraylogFormatter());
+            return $handler;
+        } catch (AMQPRuntimeException $e) {
+            return new NullHandler();
+        }
     }
 
     /**
@@ -79,15 +100,6 @@ class GraylogHandlerFactory
         }
 
         return $enabled;
-    }
-
-    /**
-     * @param string[] $options
-     * @return string
-     */
-    private static function getExchangeName(array $options)
-    {
-        return array_key_exists('exchange_name', $options) ? $options['exchange_name'] : self::DEFAULT_EXCHANGE_NAME;
     }
 
     /**
