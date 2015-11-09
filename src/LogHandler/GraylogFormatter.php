@@ -12,9 +12,20 @@ class GraylogFormatter extends GelfMessageFormatter
      */
     private $normalizer;
 
+    /**
+     * @var BacktraceConverter
+     */
+    private $backtraceConverter;
+
+    /**
+     * @param string $systemName
+     * @param string $extraPrefix
+     * @param string $contextPrefix
+     */
     public function __construct($systemName = null, $extraPrefix = null, $contextPrefix = 'ctxt_')
     {
         $this->normalizer = new LogNormalizer();
+        $this->backtraceConverter = new BacktraceConverter();
         parent::__construct($systemName, $extraPrefix, $contextPrefix);
     }
 
@@ -23,6 +34,10 @@ class GraylogFormatter extends GelfMessageFormatter
      */
     public function format(array $record)
     {
+        if (isset($record['context']['trace']) && is_array($record['context']['trace'])) {
+            $record['context']['trace'] = $this->backtraceConverter->convertToString($record['context']['trace']);
+        }
+
         foreach ($record as $index => $item) {
             $record[$index] = $this->normalizer->normalize($item);
         }
