@@ -9,7 +9,7 @@ class BacktraceConverterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function format_GivenTraceDataWithArgs_ReturnsStringWithoutArgs()
+    public function format_TraceExceedsMaxElementsWithArgs_ReturnsStringWithoutArgs()
     {
         $converter = $this->createBacktraceConverter('', $maxElementsWithArgs = 0);
 
