@@ -59,6 +59,7 @@ class BacktraceConverterTest extends \PHPUnit_Framework_TestCase
                     'foo'=> 1,
                     'bar' => 2
                 ],
+                'object' => new TestTraceObject()
             ]
         ];
     }
@@ -68,7 +69,8 @@ class BacktraceConverterTest extends \PHPUnit_Framework_TestCase
      */
     private function createTraceStringWithoutArgs()
     {
-        return '0. /var/www/vendor/guzzlehttp/command/src/AbstractClient.php:140 GuzzleHttp\Event\Emitter->emit';
+        return '0. /var/www/vendor/guzzlehttp/command/src/AbstractClient.php:140 GuzzleHttp\Event\Emitter->emit' .
+            ' Object: {"field":"test"}';
     }
 
     /**
@@ -77,7 +79,7 @@ class BacktraceConverterTest extends \PHPUnit_Framework_TestCase
     private function createTraceStringWithoutRootPath()
     {
         return '0. vendor/guzzlehttp/command/src/AbstractClient.php:140 GuzzleHttp\Event\Emitter->emit' .
-            ' Args: {"foo":1,"bar":2}';
+            ' Object: {"field":"test"} Args: {"foo":1,"bar":2}';
     }
 
     /**
@@ -89,4 +91,9 @@ class BacktraceConverterTest extends \PHPUnit_Framework_TestCase
     {
         return new BacktraceConverter($pathToCutFromFilename, $maxElementsWithArgs);
     }
+}
+
+class TestTraceObject
+{
+    public $field = 'test';
 }
