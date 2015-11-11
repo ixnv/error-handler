@@ -43,12 +43,25 @@ class BacktraceConverterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+    * @test
+    */
+    public function format_GivenTraceWithObject_ShouldConvertThisObjectToJson()
+    {
+        $converter = $this->createBacktraceConverter();
+
+        $trace = $converter->convertToString($this->createIncomingMessage('/var/www/', new TestTraceObject()));
+
+        $this->assertEquals($this->createTraceStringWithObject(), $trace);
+    }
+
+    /**
      * @param string $rootPath
+     * @param TestTraceObject $object
      * @return array
      */
-    private function createIncomingMessage($rootPath = '/var/www/')
+    private function createIncomingMessage($rootPath = '/var/www/', TestTraceObject $object = null)
     {
-        return [
+        $message = [
             [
                 'file' => $rootPath . 'vendor/guzzlehttp/command/src/AbstractClient.php',
                 'line' => 140,
@@ -58,10 +71,15 @@ class BacktraceConverterTest extends \PHPUnit_Framework_TestCase
                 'args' => [
                     'foo'=> 1,
                     'bar' => 2
-                ],
-                'object' => new TestTraceObject()
+                ]
             ]
         ];
+
+        if ($object) {
+            $message[0]['object'] = $object;
+        }
+
+        return $message;
     }
 
     /**
@@ -69,8 +87,7 @@ class BacktraceConverterTest extends \PHPUnit_Framework_TestCase
      */
     private function createTraceStringWithoutArgs()
     {
-        return '0. /var/www/vendor/guzzlehttp/command/src/AbstractClient.php:140 GuzzleHttp\Event\Emitter->emit' .
-            ' Object: {"field":"test"}';
+        return '0. /var/www/vendor/guzzlehttp/command/src/AbstractClient.php:140 GuzzleHttp\Event\Emitter->emit';
     }
 
     /**
@@ -79,7 +96,7 @@ class BacktraceConverterTest extends \PHPUnit_Framework_TestCase
     private function createTraceStringWithoutRootPath()
     {
         return '0. vendor/guzzlehttp/command/src/AbstractClient.php:140 GuzzleHttp\Event\Emitter->emit' .
-            ' Object: {"field":"test"} Args: {"foo":1,"bar":2}';
+            ' Args: {"foo":1,"bar":2}';
     }
 
     /**
@@ -90,6 +107,15 @@ class BacktraceConverterTest extends \PHPUnit_Framework_TestCase
     private function createBacktraceConverter($pathToCutFromFilename = '/var/www/', $maxElementsWithArgs = 10)
     {
         return new BacktraceConverter($pathToCutFromFilename, $maxElementsWithArgs);
+    }
+
+    /**
+     * @return string
+     */
+    private function createTraceStringWithObject()
+    {
+        return '0. vendor/guzzlehttp/command/src/AbstractClient.php:140 GuzzleHttp\Event\Emitter->emit' .
+            ' Object: {"field":"test"} Args: {"foo":1,"bar":2}';
     }
 }
 
