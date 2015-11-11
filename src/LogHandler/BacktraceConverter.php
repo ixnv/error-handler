@@ -56,10 +56,10 @@ class BacktraceConverter
     }
 
     /**
-     * @param array $data
+     * @param mixed $data
      * @return string
      */
-    private function toJson(array $data)
+    private function toJson($data)
     {
         return json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
