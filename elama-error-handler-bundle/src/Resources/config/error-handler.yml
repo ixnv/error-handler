@@ -15,7 +15,7 @@ services:
     elama.error_handler.request_listener:
         class: eLama\ErrorHandler\Bundle\EventListener\ErrorHandlerInitializer
         arguments:
-            - @service_container
+            - "@service_container"
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 255 }
             - { name: kernel.event_listener, event: console.command, method: onCommand, priority: 255 }
@@ -35,16 +35,16 @@ services:
         arguments:
             - %error_handler.log_path%
         calls:
-            - [pushHandler, [@graylog_handler]]
+            - [pushHandler, ["@graylog_handler"]]
 
     elk_log_handler:
         class: Monolog\Handler\AmqpHandler
         factory: [eLama\ErrorHandler\Bundle\ElkHandlerFactory, create]
         arguments:
-            - @service_container
+            - "@service_container"
 
     graylog_handler:
         class: Monolog\Handler\GelfHandler
         factory: [eLama\ErrorHandler\Bundle\GraylogHandlerFactory, create]
         arguments:
-            - @service_container
+            - "@service_container"
