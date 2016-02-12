@@ -37,12 +37,6 @@ services:
         calls:
             - [pushHandler, ["@graylog_handler"]]
 
-    elk_log_handler:
-        class: Monolog\Handler\AmqpHandler
-        factory: [eLama\ErrorHandler\Bundle\ElkHandlerFactory, create]
-        arguments:
-            - "@service_container"
-
     graylog_handler:
         class: Monolog\Handler\GelfHandler
         factory: [eLama\ErrorHandler\Bundle\GraylogHandlerFactory, create]
