@@ -91,7 +91,10 @@ class ErrorHandler
         return false;
     }
 
-    public function handleException(Exception $exception)
+    /**
+     * @param Exception|\Throwable $exception
+     */
+    public function handleException($exception)
     {
         $errorMessage = $this->createExceptionMessage($exception);
         $errorEvent = new ErrorEvent('Exception', $exception->getFile(), 'UNCAUGHT_EXCEPTION',
@@ -125,10 +128,10 @@ class ErrorHandler
     }
 
     /**
-     * @param Exception $exception
+     * @param Exception|\Throwable $exception
      * @return string
      */
-    private function createExceptionMessage(Exception $exception)
+    private function createExceptionMessage($exception)
     {
         $message = [];
         $message[] = "TYPE: " . get_class($exception);
@@ -252,10 +255,10 @@ class ErrorHandler
     }
 
     /**
-     * @param Exception $exception
+     * @param Exception|\Throwable $exception
      * @return array
      */
-    private function createExceptionContext(Exception $exception)
+    private function createExceptionContext($exception)
     {
         $result = [];
 
@@ -263,7 +266,8 @@ class ErrorHandler
 
         /** @var ReflectionProperty[] $nonEssentialProperties */
         $nonEssentialProperties = array_filter($rc->getProperties(), function (ReflectionProperty $p) {
-            return $p->getDeclaringClass()->getName() !== Exception::class;
+            $className = $p->getDeclaringClass()->getName();
+            return $className !== Exception::class && $className !== '\Error';
         });
 
         foreach ($nonEssentialProperties as $p) {

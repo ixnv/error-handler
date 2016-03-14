@@ -5,7 +5,7 @@
     "type": "library",
 
     "require": {
-        "php": "~5.5",
+        "php": ">=5.5",
         "swiftmailer/swiftmailer": "v5.0.1",
         "monolog/monolog": "~1.0",
         "graylog2/gelf-php": "~1.3",
