@@ -4,12 +4,21 @@ namespace eLama\ErrorHandler\LogHandler;
 
 use eLama\ErrorHandler\ContextConverter;
 use Monolog\Handler\SwiftMailerHandler;
+use Monolog\Logger;
 use Swift_Attachment;
 use Swift_Message;
 
 class SwiftMailerErrorHandler extends SwiftMailerHandler
 {
     const MAX_TRACE_ITEMS = 5;
+
+    private $message;
+
+    public function __construct(\Swift_Mailer $mailer, $message, $level = Logger::ERROR, $bubble = true)
+    {
+        parent::__construct($mailer, $message, $level, $bubble);
+        $this->message = $message;
+    }
 
     /**
      * {@inheritdoc}
