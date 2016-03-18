@@ -12,12 +12,12 @@ class SwiftMailerErrorHandler extends SwiftMailerHandler
 {
     const MAX_TRACE_ITEMS = 5;
 
-    private $message;
+    private $messageToSend;
 
     public function __construct(\Swift_Mailer $mailer, $message, $level = Logger::ERROR, $bubble = true)
     {
         parent::__construct($mailer, $message, $level, $bubble);
-        $this->message = $message;
+        $this->messageToSend = $message;
     }
 
     /**
@@ -29,7 +29,7 @@ class SwiftMailerErrorHandler extends SwiftMailerHandler
         $message = $this->createMessageFromTemplate();
         $coordinates = $this->shortenErrorCoordinates(@$record['context']['file'], @$record['context']['line']);
 
-        $subject = $this->message->getSubject() . ': ' . $record['context']['type'] . ' in ' . $coordinates . ' # ' .  trim($record['message']);
+        $subject = $this->messageToSend->getSubject() . ': ' . $record['context']['type'] . ' in ' . $coordinates . ' # ' .  trim($record['message']);
         $subject = mb_substr($subject, 0, 1500, 'utf-8');
 
         $message->setSubject($subject);
@@ -54,7 +54,7 @@ class SwiftMailerErrorHandler extends SwiftMailerHandler
      */
     protected function createMessageFromTemplate()
     {
-        return unserialize(serialize($this->message));
+        return unserialize(serialize($this->messageToSend));
     }
 
     /**
