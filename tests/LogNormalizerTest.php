@@ -39,41 +39,6 @@ class LogNormalizerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
-     */
-    public function normalize_ArrayExceedsMaxElementsLimit_ReturnsMaxElements()
-    {
-        $input = [];
-
-        for ($i = 0; $i < LogNormalizer::MAX_ARRAY_ELEMENTS + 10; ++$i) {
-            $input[] = 'element';
-        }
-
-        $result = $this->normalizer->normalize($input);
-
-        assertThat($result, is(arrayWithSize(LogNormalizer::MAX_ARRAY_ELEMENTS + 1)));
-        assertThat(end($result), is(equalTo('... 10 more')));
-    }
-
-
-    /**
-     * @test
-     */
-    public function normalize_ArrayExceedsNestingLimit_ReturnsMaxElements()
-    {
-        $input = ['element', 'element 2'];
-
-        $maxNesting = 2;
-        for ($i = 0; $i < $maxNesting; ++$i) {
-            $input = [$input, 'element'];
-        }
-
-        $result = $this->normalizer->normalize($input, $maxNesting);
-
-        assertThat($result, is(equalTo(['array(2)', 'element'])));
-    }
-
-    /**
      * @param int $bytes
      * @return string
      */
