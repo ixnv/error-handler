@@ -2,15 +2,12 @@
 
 namespace eLama\ErrorHandler\LogHandler;
 
-use eLama\ErrorHandler\LogNormalizer;
 use Monolog\Formatter\GelfMessageFormatter;
 
 class GraylogFormatter extends GelfMessageFormatter
 {
-    /**
-     * @var LogNormalizer
-     */
-    private $normalizer;
+    const MAX_STRING_SIZE_IN_BYTES = 32766;
+    const LAST_LINE_END = '...';
 
     /**
      * @var BacktraceConverter
@@ -24,7 +21,6 @@ class GraylogFormatter extends GelfMessageFormatter
      */
     public function __construct($systemName = null, $extraPrefix = null, $contextPrefix = 'ctxt_')
     {
-        $this->normalizer = new LogNormalizer();
         $this->backtraceConverter = new BacktraceConverter();
         parent::__construct($systemName, $extraPrefix, $contextPrefix);
     }
@@ -38,11 +34,18 @@ class GraylogFormatter extends GelfMessageFormatter
             $record['context']['trace'] = $this->backtraceConverter->convertToString($record['context']['trace']);
         }
 
-        foreach ($record as $index => $item) {
-            $record[$index] = $this->normalizer->normalize($item);
+        $message = parent::format($record);
+        foreach ($message->getAllAdditionals() as $index => $item) {
+            if (is_string($item) && strlen($item) > self::MAX_STRING_SIZE_IN_BYTES) {
+                $message->setAdditional(
+                    $index,
+                    substr($item, 0, self::MAX_STRING_SIZE_IN_BYTES - strlen(self::LAST_LINE_END)) . self::LAST_LINE_END
+                );
+            }
         }
 
-        return parent::format($record);
+
+        return $message;
     }
 
     /**
