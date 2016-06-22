@@ -12,6 +12,7 @@ use PhpAmqpLib\Message\AMQPMessage;
 class AmqpTransport extends AbstractTransport
 {
     const ROUTING_KEY = 'log-messages';
+    const EXCHANGE_NAME = 'log-exchange';
 
     /**
      * @var AMQPChannel
@@ -48,7 +49,7 @@ class AmqpTransport extends AbstractTransport
                     'content_type' => 'application/json'
                 ]
             ),
-            '',
+            self::EXCHANGE_NAME,
             self::ROUTING_KEY
         );
 
