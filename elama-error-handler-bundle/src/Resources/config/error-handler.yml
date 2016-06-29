@@ -11,6 +11,8 @@ services:
     elama.error_handler:
         class: eLama\ErrorHandler\ErrorHandler
         factory: [eLama\ErrorHandler\ErrorHandlerContainer, getErrorHandler]
+        calls:
+          - ["stopRenderExceptionErrorPage"]
 
     elama.error_handler.request_listener:
         class: eLama\ErrorHandler\Bundle\EventListener\ErrorHandlerInitializer
