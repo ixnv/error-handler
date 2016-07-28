@@ -41,6 +41,11 @@ class ErrorHandler
     private $responseRenderer;
 
     /**
+     * @var array
+     */
+    private $shutdownContext;
+
+    /**
      * @param LoggerInterface $logger
      * @param ErrorCodesCatalog $errorCodesCatalog
      * @param Matcher[] $matchers
@@ -114,6 +119,10 @@ class ErrorHandler
         $this->needRenderExceptionErrorPage = false;
     }
 
+    public function setShutdownContext($context)
+    {
+        $this->shutdownContext = $context;
+    }
     private function processError(ErrorEvent $errorEvent)
     {
         $this->logger->log(
@@ -211,7 +220,9 @@ class ErrorHandler
                 $error["file"],
                 $this->errorCodesCatalog->getErrorTypeToString($errorType),
                 $error["line"],
-                $error["message"]
+                $error["message"],
+                // дополнительный контекс, для понимания где упало
+                $this->shutdownContext
             );
 
             if ($this->errorCodesCatalog->isFatalError($errorType) && !$this->errorCodesCatalog->isUserGeneratedError($errorType) ) {
