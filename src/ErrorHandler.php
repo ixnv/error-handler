@@ -123,6 +123,7 @@ class ErrorHandler
     {
         $this->shutdownContext = $context;
     }
+    
     private function processError(ErrorEvent $errorEvent)
     {
         $this->logger->log(
