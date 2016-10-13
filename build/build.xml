@@ -38,7 +38,7 @@
 
     <target name="run-tests">
         <exec executable="bin/phpunit" dir="${project.dir}" passthru="true" returnProperty="phpunit_return">
-            <arg line="-c phpunit.xml.dist
+            <arg line="-c tests/phpunit.xml.dist
             --log-junit build/phpunit/phpunit.xml"/>
         </exec>
         <if>
