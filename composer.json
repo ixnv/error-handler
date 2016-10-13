@@ -14,6 +14,7 @@
 
     "require-dev": {
         "symfony/symfony": "~2.6",
+        "phing\/phing": "2.15.*",
         "hamcrest/hamcrest-php": "~1.2.1",
         "phpunit/phpunit": "~4.6.4"
     },
