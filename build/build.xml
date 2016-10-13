@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="eLama Identity &amp; Access" default="main">
+    <property name="project.dir" value="${phing.dir}/../"/>
+    <property name="project.www-user" value="www-data"/>
+    <property name="project.php_executable" value="php"/>
+
+    <target name="init">
+        <property name="hhvm_return_value" value="1"/>
+        <exec executable="hhvm" outputProperty="hhvm_return_value">
+            <arg value="--version"/>
+        </exec>
+        <if>
+            <contains string="${hhvm_return_value}" substring="HipHop" casesensitive="true"/>
+            <then>
+                <property name="project.php_executable" value="hhvm" override="true"/>
+            </then>
+        </if>
+
+        <echo message="Using ${project.php_executable} as php interpreter"/>
+    </target>
+
+    <target name="composer-install">
+        <echo>composer - version:</echo>
+        <exec executable="${project.php_executable}" dir="${project.dir}" passthru="true">
+            <arg value="bin/composer.phar"/>
+            <arg value="--version"/>
+        </exec>
+        <exec executable="${project.php_executable}" dir="${project.dir}" passthru="true">
+            <arg value="bin/composer.phar"/>
+            <arg value="install"/>
+            <arg value="--profile"/>
+        </exec>
+    </target>
+
+    <target name="test-pull-request"
+            depends="init, composer-install, run-tests">
+    </target>
+
+    <target name="run-tests">
+        <exec executable="bin/phpunit" dir="${project.dir}" passthru="true" returnProperty="phpunit_return">
+            <arg line="-c phpunit.xml.dist
+            --log-junit build/phpunit/phpunit.xml"/>
+        </exec>
+        <if>
+            <not>
+                <equals arg1="${phpunit_return}" arg2="0"/>
+            </not>
+
+            <then>
+                <fail msg="Tests failed!"/>
+            </then>
+        </if>
+    </target>
+
+    <target name="php-code-sniffer">
+        <exec executable="build/phpcs.sh" dir="${project.dir}" passthru="true" checkreturn="true"/>
+    </target>
+
+    <target name="main"
+            depends="init, composer-install, run-tests">
+    </target>
+
+</project>
+
