@@ -52,6 +52,9 @@
         </if>
     </target>
 
+    <target name="code-style" depends="init, composer-install, php-code-sniffer">
+    </target>
+
     <target name="php-code-sniffer">
         <exec executable="build/phpcs.sh" dir="${project.dir}" passthru="true" checkreturn="true"/>
     </target>
