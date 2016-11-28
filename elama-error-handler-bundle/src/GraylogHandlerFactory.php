@@ -7,7 +7,9 @@ use eLama\ErrorHandler\LoggingContext;
 use eLama\ErrorHandler\LogHandler\AmqpTransport;
 use eLama\ErrorHandler\LogHandler\GraylogFormatter;
 use eLama\ErrorHandler\LogHandler\NullHandler;
+use eLama\ErrorHandler\LogHandler\Source;
 use Gelf\Publisher;
+use Monolog\Formatter\GelfMessageFormatter;
 use Monolog\Handler\GelfHandler;
 use Monolog\Handler\HandlerInterface;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -34,13 +36,16 @@ class GraylogHandlerFactory
         if (self::isEnabled($container)) {
             $options = $container->getParameter('graylog_logging');
 
-            $handler = self::getGraylogHandler(new AmqpSettings(
-                $options['host'],
-                $options['port'],
-                $options['login'],
-                $options['password'],
-                self::getQueueName($options)
-            ));
+            $handler = self::getGraylogHandler(
+                new AmqpSettings(
+                    $options['host'],
+                    $options['port'],
+                    $options['login'],
+                    $options['password'],
+                    self::getQueueName($options)
+                ),
+                self::getSource($options)
+            );
 
             LoggingContext::setHandler($handler);
         }
@@ -50,12 +55,13 @@ class GraylogHandlerFactory
 
     /**
      * @param AmqpSettings $amqpSettings
+     * @param Source $source
      * @return HandlerInterface
      */
-    private static function getGraylogHandler(AmqpSettings $amqpSettings)
+    private static function getGraylogHandler(AmqpSettings $amqpSettings, Source $source = null)
     {
         if (!self::$handler) {
-            self::$handler = self::createGraylogHandler($amqpSettings);
+            self::$handler = self::createGraylogHandler($amqpSettings, $source);
         }
 
         return self::$handler;
@@ -63,9 +69,10 @@ class GraylogHandlerFactory
 
     /**
      * @param AmqpSettings $amqpSettings
+     * @param Source $source
      * @return HandlerInterface
      */
-    private static function createGraylogHandler(AmqpSettings $amqpSettings)
+    private static function createGraylogHandler(AmqpSettings $amqpSettings, Source $source = null)
     {
         try {
             $connection = new AMQPStreamConnection(
@@ -79,7 +86,8 @@ class GraylogHandlerFactory
             $channel->queue_declare($amqpSettings->getQueueName(), false, true, false, false);
 
             $handler = new GelfHandler(new Publisher(new AmqpTransport($channel)));
-            $handler->setFormatter(new GraylogFormatter());
+            $handler->setFormatter(new GraylogFormatter(new GelfMessageFormatter(), $source));
+
             return $handler;
         } catch (AMQPRuntimeException $e) {
             return new NullHandler();
@@ -109,5 +117,14 @@ class GraylogHandlerFactory
     private static function getQueueName(array $options)
     {
         return array_key_exists('queue_name', $options) ? $options['queue_name'] : self::DEFAULT_QUEUE_NAME;
+    }
+
+    private static function getSource(array $options)
+    {
+        if (array_key_exists('source', $options) && array_key_exists('environment', $options)) {
+            return new Source($options['source'], $options['environment']);
+        }
+
+        return null;
     }
 }
