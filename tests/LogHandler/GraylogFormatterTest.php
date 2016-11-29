@@ -31,7 +31,7 @@ class GraylogFormatterTest extends \PHPUnit_Framework_TestCase
 
         assertThat(
             $message->getAdditional('ctxt_trace'),
-            matchesPattern(sprintf("/^0\.\s%s.*/ui", str_replace('\\', '\\\\', __CLASS__)))
+            containsString('0. ' . __CLASS__)
         );
     }
 
