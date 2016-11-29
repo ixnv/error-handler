@@ -44,7 +44,7 @@ class GraylogHandlerFactory
                     $options['password'],
                     self::getQueueName($options)
                 ),
-                self::getSource($options)
+                self::createSource($options)
             );
 
             LoggingContext::setHandler($handler);
@@ -119,9 +119,9 @@ class GraylogHandlerFactory
         return array_key_exists('queue_name', $options) ? $options['queue_name'] : self::DEFAULT_QUEUE_NAME;
     }
 
-    private static function getSource(array $options)
+    private static function createSource(array $options)
     {
-        if (array_key_exists('source', $options) && array_key_exists('environment', $options)) {
+        if (isset($options['source'], $options['environment'])) {
             return new Source($options['source'], $options['environment']);
         }
 

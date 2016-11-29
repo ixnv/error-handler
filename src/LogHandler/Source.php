@@ -2,7 +2,7 @@
 
 namespace eLama\ErrorHandler\LogHandler;
 
-class Source
+final class Source
 {
     /**
      * @var string

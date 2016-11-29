@@ -59,7 +59,7 @@ class GraylogFormatter implements FormatterInterface
 
     private function enrichMessageWithSourceData(Message $message)
     {
-        if (is_null($this->source)) {
+        if ($this->source === null) {
             return;
         }
 
