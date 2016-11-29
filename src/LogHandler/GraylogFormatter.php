@@ -2,12 +2,15 @@
 
 namespace eLama\ErrorHandler\LogHandler;
 
+use Gelf\Message;
+use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\GelfMessageFormatter;
 
-class GraylogFormatter extends GelfMessageFormatter
+class GraylogFormatter implements FormatterInterface
 {
     const MAX_STRING_SIZE_IN_BYTES = 32766;
-    const LAST_LINE_END = '...';
+
+    private $gelfMessageFormatter;
 
     /**
      * @var BacktraceConverter
@@ -15,14 +18,21 @@ class GraylogFormatter extends GelfMessageFormatter
     private $backtraceConverter;
 
     /**
-     * @param string $systemName
-     * @param string $extraPrefix
-     * @param string $contextPrefix
+     * @var Source
      */
-    public function __construct($systemName = null, $extraPrefix = null, $contextPrefix = 'ctxt_')
+    private $source;
+
+    /**
+     * GraylogFormatter constructor.
+     *
+     * @param GelfMessageFormatter $messageFormatter
+     * @param Source $source
+     */
+    public function __construct(GelfMessageFormatter $messageFormatter, Source $source = null)
     {
         $this->backtraceConverter = new BacktraceConverter();
-        parent::__construct($systemName, $extraPrefix, $contextPrefix);
+        $this->gelfMessageFormatter = $messageFormatter;
+        $this->source = $source;
     }
 
     /**
@@ -34,16 +44,8 @@ class GraylogFormatter extends GelfMessageFormatter
             $record['context']['trace'] = $this->backtraceConverter->convertToString($record['context']['trace']);
         }
 
-        $message = parent::format($record);
-        foreach ($message->getAllAdditionals() as $index => $item) {
-            if (is_string($item) && strlen($item) > self::MAX_STRING_SIZE_IN_BYTES) {
-                $message->setAdditional(
-                    $index,
-                    substr($item, 0, self::MAX_STRING_SIZE_IN_BYTES - strlen(self::LAST_LINE_END)) . self::LAST_LINE_END
-                );
-            }
-        }
-
+        $message = $this->gelfMessageFormatter->format($record);
+        $this->enrichMessageWithSourceData($message);
 
         return $message;
     }
@@ -53,5 +55,15 @@ class GraylogFormatter extends GelfMessageFormatter
      */
     public function formatBatch(array $records)
     {
+    }
+
+    private function enrichMessageWithSourceData(Message $message)
+    {
+        if ($this->source === null) {
+            return;
+        }
+
+        $message->setHost($this->source->getSource());
+        $message->setAdditional('environment', $this->source->getEnvironment());
     }
 }
