@@ -181,9 +181,12 @@ class ErrorHandler
     {
         foreach ($this->matchers as $matcher) {
             $match = $matcher->match($errorEvent);
-            if (in_array($match, [Matcher::HANDLE, Matcher::IGNORE], true)) {
-                return $match === Matcher::HANDLE;
+
+            if ($match === Matcher::NO_MATCH) {
+                continue;
             }
+
+            return $match === Matcher::HANDLE;
         }
 
         return true;
