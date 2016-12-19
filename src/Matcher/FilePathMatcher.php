@@ -31,7 +31,7 @@ class FilePathMatcher implements Matcher
      */
     public function match(ErrorEvent $event)
     {
-        $matches = strncmp($event->getFile(), $this->path, strlen($this->path)) === 0;
+        $matches = strpos($event->getFile(), $this->path) !== false;
 
         return $matches ? $this->actionOnMatch : self::NO_MATCH;
     }
