@@ -102,8 +102,15 @@ class ErrorHandler
     public function handleException($exception)
     {
         $errorMessage = $this->createExceptionMessage($exception);
-        $errorEvent = new ErrorEvent('Exception', $exception->getFile(), 'UNCAUGHT_EXCEPTION',
-            $exception->getLine(), $errorMessage, $exception->getTrace(), $this->createExceptionContext($exception));
+        $errorEvent = new ErrorEvent(
+            'Exception',
+            $exception->getFile(),
+            'UNCAUGHT_EXCEPTION',
+            $exception->getLine(),
+            $errorMessage,
+            $exception->getTrace(),
+            $this->createExceptionContext($exception)
+        );
 
         $this->processError($errorEvent);
     }
@@ -229,7 +236,10 @@ class ErrorHandler
                 $this->shutdownContext
             );
 
-            if ($this->errorCodesCatalog->isFatalError($errorType) && !$this->errorCodesCatalog->isUserGeneratedError($errorType) ) {
+            if (
+                $this->errorCodesCatalog->isFatalError($errorType)
+                && !$this->errorCodesCatalog->isUserGeneratedError($errorType)
+            ) {
                 $this->processError($errorEvent);
             }
         }
