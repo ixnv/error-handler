@@ -4,7 +4,7 @@ error_handler:
         exception: ~
         user_error: ~
         unknown_file: ~
-    log_path: %kernel.logs_dir%/ErrorHandler
+    log_path: "%kernel.logs_dir%/ErrorHandler"
     logger: elama.error_handler_logger
 
 services:
@@ -35,7 +35,7 @@ services:
         class: Monolog\Logger
         factory: [eLama\ErrorHandler\LoggerFactory, createLogger]
         arguments:
-            - %error_handler.log_path%
+            - "%error_handler.log_path%"
         calls:
             - [pushHandler, ["@graylog_handler"]]
 
