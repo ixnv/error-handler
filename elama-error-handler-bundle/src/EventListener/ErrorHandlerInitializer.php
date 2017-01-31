@@ -86,7 +86,8 @@ class ErrorHandlerInitializer
     {
         $errorCodesCatalog = new ErrorCodesCatalog();
 
-        // Конфиги позволяют игноировать фаталы / exception'ы, но в этом сейчас толку нет, т.к нет возможности в библиотеке
+        // Конфиги позволяют игноировать фаталы / exception'ы,
+        // но в этом сейчас толку нет, т.к нет возможности в библиотеке
         $matchers = [
             new FatalErrorMatcher($errorCodesCatalog),
             new ExceptionMatcher($errorCodesCatalog),
@@ -103,7 +104,10 @@ class ErrorHandlerInitializer
         }
 
         foreach ($matchesConfig['file_paths'] as $filePathMatcher) {
-            $matchers[] = new FilePathMatcher($filePathMatcher['path'], $this->createMatcher($filePathMatcher['handle']));
+            $matchers[] = new FilePathMatcher(
+                $filePathMatcher['path'],
+                $this->createMatcher($filePathMatcher['handle'])
+            );
         }
 
         return $matchers;

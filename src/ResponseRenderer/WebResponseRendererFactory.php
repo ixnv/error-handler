@@ -84,7 +84,9 @@ class WebResponseRendererFactory
             $responseRenderer = new JsonResponseRenderer();
         } elseif ($this->accepts('application/soap+xml') || $this->contentTypeIs('application/soap+xml')) {
             $responseRenderer = new Soap12ResponseRenderer();
-        } elseif (($this->accepts('text/xml') || $this->contentTypeIs('text/xml')) && $this->requestBodyContains('http://schemas.xmlsoap.org/soap/envelope')) {
+        } elseif (($this->accepts('text/xml') || $this->contentTypeIs('text/xml'))
+            && $this->requestBodyContains('http://schemas.xmlsoap.org/soap/envelope')
+        ) {
             $responseRenderer = new Soap11ResponseRenderer();
         }
 

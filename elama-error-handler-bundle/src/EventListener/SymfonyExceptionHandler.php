@@ -53,7 +53,7 @@ class SymfonyExceptionHandler
 
     public function stopRenderExceptionErrorPage()
     {
-        $this->safeCall(function() {
+        $this->safeCall(function () {
             $this->getErrorHandler()->stopRenderExceptionErrorPage();
         });
     }

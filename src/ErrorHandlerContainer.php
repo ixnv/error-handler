@@ -71,7 +71,10 @@ class ErrorHandlerContainer
             restore_error_handler();
         }
 
-        set_error_handler([static::$errorHandler, 'handleError'], E_ALL & (~E_NOTICE) | E_STRICT | E_DEPRECATED | E_USER_DEPRECATED);
+        set_error_handler(
+            [static::$errorHandler, 'handleError'],
+            E_ALL & (~E_NOTICE) | E_STRICT | E_DEPRECATED | E_USER_DEPRECATED
+        );
         set_exception_handler([static::$errorHandler, 'handleException']);
 
         $errorHandler = static::$errorHandler;
