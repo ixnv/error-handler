@@ -73,7 +73,8 @@ class ErrorHandlerInitializer
             $this->container->getParameter('error_handler.log_path'),
             $this->createMatchers($this->container->getParameter('error_handler.matchers')),
             $debugMode,
-            $logger
+            $logger,
+            $this->container->getParameter('error_handler.renderer')
         );
     }
 

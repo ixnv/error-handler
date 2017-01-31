@@ -19,6 +19,7 @@ class ErrorHandlerExtension extends Extension
 
         $container->setParameter('error_handler.matchers', $config['matchers']);
         $container->setParameter('error_handler.log_path', $config['log_path']);
+        $container->setParameter('error_handler.renderer', $config['renderer']);
 
         if ($config['logger'] !== null) {
             $container->setParameter('error_handler.logger', $config['logger']);

@@ -32,6 +32,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode("log_path")->end()
                 ->scalarNode("logger")->end()
+                ->scalarNode("renderer")->defaultValue('auto')->end()
                 ->arrayNode('matchers')
                     ->children()
                         ->arrayNode('fatal')
