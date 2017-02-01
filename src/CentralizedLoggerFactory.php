@@ -62,11 +62,9 @@ class CentralizedLoggerFactory
                 $amqpSettings->getPassword()
             );
 
-            $channel = $connection->channel();
-            $channel->queue_declare($amqpSettings->getQueueName(), false, true, false, false);
-
-            $handler = new GelfHandler(new Publisher(new AmqpTransport($channel)));
+            $handler = new GelfHandler(new Publisher(new AmqpTransport($connection, $amqpSettings->getQueueName())));
             $handler->setFormatter(new GraylogFormatter(new GelfMessageFormatter()));
+
             return $handler;
         } catch (AMQPRuntimeException $e) {
             return new NullHandler();
