@@ -12,7 +12,7 @@ use Gelf\Publisher;
 use Monolog\Formatter\GelfMessageFormatter;
 use Monolog\Handler\GelfHandler;
 use Monolog\Handler\HandlerInterface;
-use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Connection\AMQPLazyConnection;
 use PhpAmqpLib\Exception\AMQPRuntimeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -75,7 +75,7 @@ class GraylogHandlerFactory
     private static function createGraylogHandler(AmqpSettings $amqpSettings, Source $source = null)
     {
         try {
-            $connection = new AMQPStreamConnection(
+            $connection = new AMQPLazyConnection(
                 $amqpSettings->getHost(),
                 $amqpSettings->getPort(),
                 $amqpSettings->getLogin(),
