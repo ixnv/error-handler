@@ -21,6 +21,16 @@ class SymfonyExceptionHandler
     private $errorHandler = null;
 
     /**
+     * @var string
+     */
+    private $rendererType;
+
+    public function __construct($rendererType = 'auto')
+    {
+        $this->rendererType = $rendererType;
+    }
+
+    /**
      * @param ConsoleExceptionEvent|Event|GetResponseForExceptionEvent $event
      */
     public function onException(Event $event)
@@ -43,7 +53,7 @@ class SymfonyExceptionHandler
 
     public function stopRenderExceptionErrorPage()
     {
-        $this->safeCall(function() {
+        $this->safeCall(function () {
             $this->getErrorHandler()->stopRenderExceptionErrorPage();
         });
     }
@@ -68,7 +78,7 @@ class SymfonyExceptionHandler
         try {
             $f();
         } catch (ErrorHandlerIsNotInitializedException $e) {
-            $renderer = WebResponseRendererFactory::createFromGlobals()->createResponseRenderer();
+            $renderer = WebResponseRendererFactory::createRenderer($this->rendererType);
             $renderer->render();
 
             die;

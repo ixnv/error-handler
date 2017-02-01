@@ -17,7 +17,37 @@ class WebResponseRendererFactory
      */
     private $input;
 
-    public static function createFromGlobals()
+    /**
+     * @param string $rendererType
+     * @return ResponseRenderer
+     */
+    public static function createRenderer($rendererType)
+    {
+        switch ($rendererType) {
+            case 'json':
+                $responseRenderer = new JsonResponseRenderer();
+                break;
+            case 'soap11':
+                $responseRenderer = new Soap11ResponseRenderer();
+                break;
+            case 'soap12':
+                $responseRenderer = new Soap12ResponseRenderer();
+                break;
+            case 'html':
+                $responseRenderer = new HtmlResponseRenderer();
+                break;
+            case 'plain':
+                $responseRenderer = new PlainTextResponseRenderer();
+                break;
+            case 'auto':
+            default:
+                $responseRenderer = self::createFromGlobals()->createResponseRenderer();
+        }
+
+        return $responseRenderer;
+    }
+
+    private static function createFromGlobals()
     {
         $inputPart = '';
         if (strtoupper(self::get($_SERVER, 'REQUEST_METHOD', '')) === 'POST') {
@@ -54,7 +84,9 @@ class WebResponseRendererFactory
             $responseRenderer = new JsonResponseRenderer();
         } elseif ($this->accepts('application/soap+xml') || $this->contentTypeIs('application/soap+xml')) {
             $responseRenderer = new Soap12ResponseRenderer();
-        } elseif (($this->accepts('text/xml') || $this->contentTypeIs('text/xml')) && $this->requestBodyContains('http://schemas.xmlsoap.org/soap/envelope')) {
+        } elseif (($this->accepts('text/xml') || $this->contentTypeIs('text/xml'))
+            && $this->requestBodyContains('http://schemas.xmlsoap.org/soap/envelope')
+        ) {
             $responseRenderer = new Soap11ResponseRenderer();
         }
 

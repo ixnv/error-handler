@@ -6,6 +6,7 @@ error_handler:
         unknown_file: ~
     log_path: "%kernel.logs_dir%/ErrorHandler"
     logger: elama.error_handler_logger
+    renderer: 'auto'
 
 services:
     elama.error_handler:
@@ -24,6 +25,8 @@ services:
 
     core.exceptlistener:
         class: eLama\ErrorHandler\Bundle\EventListener\SymfonyExceptionHandler
+        arguments:
+            - "%error_handler.renderer%"
         calls:
             - ["stopRenderExceptionErrorPage"]
         tags:

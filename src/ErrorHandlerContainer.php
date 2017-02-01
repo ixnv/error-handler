@@ -34,12 +34,14 @@ class ErrorHandlerContainer
      * @param Matcher[] $matchers
      * @param bool $debugMode
      * @param LoggerInterface $logger
+     * @param string $rendererType
      */
     public static function init(
         $errorHandlerLogPath,
         array $matchers,
         $debugMode = false,
-        LoggerInterface $logger = null
+        LoggerInterface $logger = null,
+        $rendererType = 'auto'
     ) {
         if (static::$errorHandler) {
             throw new \LogicException('ErrorHandler is already initialized');
@@ -49,7 +51,7 @@ class ErrorHandlerContainer
             $logger = LoggerFactory::createLogger($errorHandlerLogPath);
         }
 
-        $responseRenderer = self::createResponseRenderer();
+        $responseRenderer = self::createResponseRenderer($rendererType);
 
         static::$errorHandler = new ErrorHandler(
             $logger,
@@ -69,7 +71,10 @@ class ErrorHandlerContainer
             restore_error_handler();
         }
 
-        set_error_handler([static::$errorHandler, 'handleError'], E_ALL & (~E_NOTICE) | E_STRICT | E_DEPRECATED | E_USER_DEPRECATED);
+        set_error_handler(
+            [static::$errorHandler, 'handleError'],
+            E_ALL & (~E_NOTICE) | E_STRICT | E_DEPRECATED | E_USER_DEPRECATED
+        );
         set_exception_handler([static::$errorHandler, 'handleException']);
 
         $errorHandler = static::$errorHandler;
@@ -101,17 +106,16 @@ class ErrorHandlerContainer
     }
 
     /**
+     * @var string $rendererType
      * @return ResponseRenderer
      */
-    private static function createResponseRenderer()
+    private static function createResponseRenderer($rendererType)
     {
         if (self::isConsole()) {
             return null;
         }
 
-        $webResponseRendererFactory = WebResponseRendererFactory::createFromGlobals();
-
-        return $webResponseRendererFactory->createResponseRenderer();
+        return WebResponseRendererFactory::createRenderer($rendererType);
     }
 
     /**
