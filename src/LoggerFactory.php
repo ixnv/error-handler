@@ -3,8 +3,6 @@
 namespace eLama\ErrorHandler;
 
 use eLama\ErrorHandler\LogHandler\ElasticSearchFormatter;
-use eLama\ErrorHandler\LogHandler\MailerFormatter;
-use eLama\ErrorHandler\LogHandler\MailHandlerFactory;
 use eLama\ErrorHandler\LogHandler\MessageHtmlFormatter;
 use eLama\ErrorHandler\LogProcessor\ConsoleProcessor;
 use eLama\ErrorHandler\LogProcessor\SessionProcessor;
@@ -62,8 +60,6 @@ class LoggerFactory
     {
         //Preloading classes in case of E_STRICT
         class_exists('Monolog\Formatter\LineFormatter');
-        class_exists('Swift_Events_SendEvent');
-        class_exists('Swift_CharacterReader_Utf8Reader');
     }
 
     private static function setLogProcessors(Logger $logger)
